@@ -46,7 +46,7 @@ if (!isDev && cluster.isMaster) {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(cookieParser());
-  app.use(session({ secret: 'library', resave: false, saveUninitialized: false }));
+  app.use(session({ secret: 'library', resave: false, saveUninitialized: false, httpOnly:false }));
 
   // DB stuff
   require('./config/passport.js')(app);
