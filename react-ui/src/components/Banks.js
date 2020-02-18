@@ -16,7 +16,9 @@ function Banks(props){
     }
     }
 
-    return <PlaidLink 
+    return <div>
+    publicKey={process.env.REACT_APP_PLAID_PRODUCTS}
+    <PlaidLink 
     clientName="budgetting-app"
     env={process.env.REACT_APP_PLAID_ENV}
     product={process.env.REACT_APP_PLAID_PRODUCTS}
@@ -24,7 +26,7 @@ function Banks(props){
     onSuccess={handleSuccess}
     >
     Open Link and connect to your bank!
-    </PlaidLink>
+    </PlaidLink></div>
     
 }
 
