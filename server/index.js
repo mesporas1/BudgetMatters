@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 const { MongoClient } = require('mongodb');
 if (process.env.NODE_ENV !== 'production') require('dotenv').config()
 
@@ -46,7 +47,7 @@ if (!isDev && cluster.isMaster) {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(cookieParser());
-  app.use(session({ secret: 'library', resave: false, saveUninitialized: false, httpOnly:false }));
+  app.use(session({ secret: 'library',  resave: false, saveUninitialized: false, httpOnly:false, store: new MongoStore({ url: process.env.MONGODB_URI }) }));
 
   // DB stuff
   require('./config/passport.js')(app);
