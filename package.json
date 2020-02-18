@@ -30,8 +30,7 @@
     "plaid": "^4.6.0"
   },
   "repository": {
-    "type": "git",
-    "url": "https://github.com/mars/heroku-cra-node.git"
+    "type": "git"
   },
   "keywords": [
     "node",

@@ -36,7 +36,7 @@ function router(nav) {
       const { username } = req.user;
       (async function mongo() {
         try {
-          const db = req.app.locals.db
+          const db = request.app.locals.db
 
           const col = await db.collection('banks');
 
@@ -59,8 +59,10 @@ function router(nav) {
   plaidRouter.route('/get_access_token')
     .post((request, response, next) => {
       PUBLIC_TOKEN = request.body.public_token;
+      debug(PUBLIC_TOKEN);
       client.exchangePublicToken(PUBLIC_TOKEN, (error, tokenResponse) => {
         if (error != null) {
+          debug("something is wrong 1");
           debug(error);
           return response.json({ error });
         }
@@ -69,10 +71,11 @@ function router(nav) {
         const { institution } = request.body;
         // debug(institution);
         const { username } = request.user;
+        debug("something is wrong 3")
         debug(request);
         (async function addItem() {
           try {
-            const db = req.app.locals.db
+            const db = request.app.locals.db
 
             const col = db.collection('banks');
             const userItem = {
@@ -81,6 +84,7 @@ function router(nav) {
             const results = await col.insertOne(userItem);
             // debug(results);
           } catch (err) {
+            debug("something is wrong 2")
             debug(err);
           }
         }());
@@ -107,7 +111,7 @@ function router(nav) {
       const endDate = moment().format('YYYY-MM-DD');
       (async function getAccessToken() {
         try {
-          const db = req.app.locals.db
+          const db = request.app.locals.db
 
           const col = db.collection('banks');
 
