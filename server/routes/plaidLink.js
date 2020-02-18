@@ -10,8 +10,6 @@ const {
   PLAID_CLIENT_ID, PLAID_SECRET, PLAID_PUBLIC_KEY, PLAID_ENV, PLAID_PRODUCTS, PLAID_COUNTRY_CODES
 } = process.env;
 
-let PUBLIC_TOKEN = null;
-
 const client = new plaid.Client(
   PLAID_CLIENT_ID,
   PLAID_SECRET,
@@ -27,6 +25,7 @@ function router(nav) {
       debug(req.user);
       next();
     } else {
+      console.log('something went wrong redirect')
       res.redirect('/');
     }
   });
@@ -58,7 +57,7 @@ function router(nav) {
 
   plaidRouter.route('/get_access_token')
     .post((request, response, next) => {
-      PUBLIC_TOKEN = request.body.public_token;
+      const PUBLIC_TOKEN = request.body.public_token;
       debug(PUBLIC_TOKEN);
       client.exchangePublicToken(PUBLIC_TOKEN, (error, tokenResponse) => {
         if (error != null) {
