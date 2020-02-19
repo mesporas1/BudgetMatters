@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import PlaidLink from 'react-plaid-link';
 import '../App.css';
 const axios = require('axios');
@@ -15,20 +15,34 @@ function Banks(props){
             console.log(e);
     }
     }
-    let banks = <th>No banks</th>
-    try {axios.get('/user/getBanks').then(response => {
-        console.log(response.data)
-            banks = response.data.banks.map((function(bank){
-                console.log(bank)
-                return <th>{bank.institution}</th>
-            }))
-            console.log('somethings going on 1')
-        })}
-    catch {
-        banks = <th>No banks added</th>
-        console.log('somethings going on 2')
-    }
     
+    const [banks, setBanks] = useState(<th> No bank data </th>);
+    const [isFetching, setIsFetching] = useState(false);
+    const [url, setUrl] = useState('/user/getBanks');
+  
+    const fetchBanks = useCallback(() => {
+        axios.get(url)
+        .then(response => {
+            console.log(response.data)
+                setBanks(response.data.banks.map((function(bank){
+                    console.log(bank)
+                    return <tr><th>{bank.institution}</th></tr>
+                })))
+                console.log('Got the banks')
+                setIsFetching(false);
+            })
+        .catch(function(error){
+            setBanks(<th>No banks added</th>)
+            console.log("not able to get data")
+            setIsFetching(false);
+        }) 
+    }, [url]);
+  
+    useEffect(() => {
+      setIsFetching(true);
+      fetchBanks();
+    }, [fetchBanks]);
+
    
     return <div>
     publicKey={process.env.REACT_APP_PLAID_PRODUCTS}
@@ -44,11 +58,9 @@ function Banks(props){
 
     <table>
         <tr>
-            <th> Bank Name</th>
+            <th>Bank</th>
         </tr>
-        <tr>
-            <th>{banks}</th>
-        </tr>
+        { isFetching ? 'Fetching banks from API': banks}
     </table>
 
     </div>
