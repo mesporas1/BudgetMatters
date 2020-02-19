@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node server",
     "build": "cd react-ui/ && npm install && npm run build",
-    "dev": "DEBUG=app,app:* node server & nodemon server"
+    "dev": "DEBUG=app,app:* node server"
   },
   "cacheDirectories": [
     "node_modules",

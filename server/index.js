@@ -72,10 +72,12 @@ if (!isDev && cluster.isMaster) {
   const authRouter = require('./routes/authRoutes')();
   const plaidRouter = require('./routes/plaidLink')();
   const categoryRouter = require('./routes/categoryRoutes')();
+  const userRouter = require('./routes/userRoutes')();
 
   app.use('/auth', authRouter);
   app.use('/plaid', plaidRouter);
   app.use('/category', categoryRouter);
+  app.use('/user', userRouter);
   
   // All remaining requests return the React app, so it can handle routing.
   app.get('*', function(request, response) {

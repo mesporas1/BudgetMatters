@@ -15,7 +15,21 @@ function Banks(props){
             console.log(e);
     }
     }
-
+    let banks = <th>No banks</th>
+    try {axios.get('/user/getBanks').then(response => {
+        console.log(response.data)
+            banks = response.data.banks.map((function(bank){
+                console.log(bank)
+                return <th>{bank.institution}</th>
+            }))
+            console.log('somethings going on 1')
+        })}
+    catch {
+        banks = <th>No banks added</th>
+        console.log('somethings going on 2')
+    }
+    
+   
     return <div>
     publicKey={process.env.REACT_APP_PLAID_PRODUCTS}
     <PlaidLink 
@@ -26,7 +40,18 @@ function Banks(props){
     onSuccess={handleSuccess}
     >
     Open Link and connect to your bank!
-    </PlaidLink></div>
+    </PlaidLink>
+
+    <table>
+        <tr>
+            <th> Bank Name</th>
+        </tr>
+        <tr>
+            <th>{banks}</th>
+        </tr>
+    </table>
+
+    </div>
     
 }
 

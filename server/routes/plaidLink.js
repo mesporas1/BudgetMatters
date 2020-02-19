@@ -108,7 +108,7 @@ function router(nav) {
         .subtract(30, 'days')
         .format('YYYY-MM-DD');
       const endDate = moment().format('YYYY-MM-DD');
-      (async function getAccessToken() {
+      (async function getTransactions() {
         try {
           const db = request.app.locals.db
 
