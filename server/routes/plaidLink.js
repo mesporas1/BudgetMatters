@@ -155,15 +155,49 @@ function router(nav) {
       });
     });
 
-  plaidRouter.route('/webhook')
+  plaidRouter.route('/webhook/transactions')
     .post((request, response, next) => {
-      const ACCESS_TOKEN = request.body.access_token;
-      client.getItem(ACCESS_TOKEN, (error, itemResponse) => {
-        response.json({
-          item_id: itemResponse.item.item_id,
-          error: false
-        });
-      });
+      const startDate = moment()
+        .subtract(30, 'days')
+        .format('YYYY-MM-DD');
+      const endDate = moment().format('YYYY-MM-DD');
+      const {item_id} = request.body
+      const {new_transactions} = request.body
+      (async function getTransactions() {
+        try {
+          const db = request.app.locals.db
+
+          const col = db.collection('banks');
+
+          const bank = await col.findOne({ ITEM_ID: item_id});
+          // debug(results);
+
+          client.getTransactions(
+            bank.ACCESS_TOKEN,
+            startDate,
+            endDate,
+            {
+              count: new_transactions,
+              offset: 0
+            },
+            (error, transactionsResponse) => {
+              if (error != null) {
+                debug(error);
+                //return response.json({
+                 // error
+               // });
+              }
+              debug(transactionsResponse.transactions);
+              const transactions = db.collection('transactions')
+              await transactions.insert(transactionsResponse.transactions)
+              //return response.json({ error: null, transactions: transactionsResponse });
+
+            }
+          );
+        } catch (err) {
+          debug(err);
+        }
+      }());
     });
   return plaidRouter;
 }
