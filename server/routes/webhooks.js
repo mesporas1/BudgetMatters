@@ -6,7 +6,7 @@ const moment = require('moment');
 //const jwt = require('jsonwebtoken');
 if (process.env.NODE_ENV !== 'production') require('dotenv').config()
 
-const plaidRouter = express.Router();
+const webhookRouter = express.Router();
 const {
   PLAID_CLIENT_ID, PLAID_SECRET, PLAID_PUBLIC_KEY, PLAID_ENV, PLAID_PRODUCTS, PLAID_COUNTRY_CODES
 } = process.env;
