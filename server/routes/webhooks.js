@@ -28,7 +28,7 @@ const client = new plaid.Client(
 function router(nav) {
     webhookRouter.route('/transactions')
     .post((request, response, next) => {
-      console.log(request.body)
+      //console.log(request.body)
       const startDate = moment()
         .subtract(30, 'days')
         .format('YYYY-MM-DD');
@@ -69,8 +69,10 @@ function router(nav) {
 
             }
           );
+          response.sendStatus(200);
         } catch (err) {
           debug(err);
+          response.sendStatus(500);
         }
       }());
     });
