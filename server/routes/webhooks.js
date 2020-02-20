@@ -28,13 +28,13 @@ const client = new plaid.Client(
 function router(nav) {
     webhookRouter.route('/transactions')
     .post((request, response, next) => {
-      console.log(request)
+      console.log(request.body)
       const startDate = moment()
         .subtract(30, 'days')
         .format('YYYY-MM-DD');
       const endDate = moment().format('YYYY-MM-DD');
-      const {item_id} = request.body
-      const {new_transactions} = request.body
+      const { item_id } = request.body;
+      const { new_transactions } = request.body;
       (async function getTransactions() {
         try {
           const db = request.app.locals.db
