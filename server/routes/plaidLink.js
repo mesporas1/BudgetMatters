@@ -132,7 +132,9 @@ function router(nav) {
                   error
                 });
               }
-              debug(transactionsResponse);
+              debug(transactionsResponse.transactions);
+              //const transCol = db.collection('transactions')
+              //await col.insert(transactionsResponse.transactions)
               return response.json({ error: null, transactions: transactionsResponse });
             }
           );
@@ -143,6 +145,17 @@ function router(nav) {
     });
 
   plaidRouter.route('/set_access_token')
+    .post((request, response, next) => {
+      const ACCESS_TOKEN = request.body.access_token;
+      client.getItem(ACCESS_TOKEN, (error, itemResponse) => {
+        response.json({
+          item_id: itemResponse.item.item_id,
+          error: false
+        });
+      });
+    });
+
+  plaidRouter.route('/webhook')
     .post((request, response, next) => {
       const ACCESS_TOKEN = request.body.access_token;
       client.getItem(ACCESS_TOKEN, (error, itemResponse) => {

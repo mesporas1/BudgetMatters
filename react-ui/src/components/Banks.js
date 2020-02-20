@@ -24,7 +24,7 @@ function Banks(props){
       fetchBanks()
     }, [newBank]);
 
-    function handleSuccess(token, metadata){
+    function addBank(token, metadata){
         console.log(token)
         console.log(metadata)
         try {
@@ -32,6 +32,13 @@ function Banks(props){
                 await axios.post('/plaid/get_access_token',{
                     public_token: token,
                     institution: metadata.institution.name
+                    })
+                    .then(() => {
+                        const url = '/plaid/transactions/' + metadata.institution.name
+                        return axios.get(url)
+                    })
+                    .then((response) => {
+                        console.log('Response', response)
                     })
                 setNewBank(true)
             }
@@ -50,7 +57,7 @@ function Banks(props){
     env={process.env.REACT_APP_PLAID_ENV}
     product={process.env.REACT_APP_PLAID_PRODUCTS}
     publicKey={process.env.REACT_APP_PLAID_PUBLIC_KEY}
-    onSuccess={handleSuccess}
+    onSuccess={addBank}
     >
     Open Link and connect to your bank!
     </PlaidLink>
