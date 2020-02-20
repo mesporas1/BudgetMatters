@@ -79,7 +79,7 @@ if (!isDev && cluster.isMaster) {
   app.use('/plaid', plaidRouter);
   app.use('/category', categoryRouter);
   app.use('/user', userRouter);
-  app.use('/webhook', webhookRouter);
+  app.use('/webhooks', webhookRouter);
   
   // All remaining requests return the React app, so it can handle routing.
   app.get('*', function(request, response) {
