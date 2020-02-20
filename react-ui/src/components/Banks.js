@@ -58,7 +58,7 @@ function Banks(props){
     product={process.env.REACT_APP_PLAID_PRODUCTS}
     publicKey={process.env.REACT_APP_PLAID_PUBLIC_KEY}
     onSuccess={addBank}
-    webhook="https://budgetmatters.herokuapp.com/plaid/webhook/transactions"
+    webhook="https://budgetmatters.herokuapp.com/webhooks/transactions"
     >
     Open Link and connect to your bank!
     </PlaidLink>
