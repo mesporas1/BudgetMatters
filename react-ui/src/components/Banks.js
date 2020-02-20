@@ -33,13 +33,13 @@ function Banks(props){
                     public_token: token,
                     institution: metadata.institution.name
                     })
-                    .then(() => {
+                    /*.then(() => {
                         const url = '/plaid/transactions/' + metadata.institution.name
                         return axios.get(url)
                     })
                     .then((response) => {
                         console.log('Response', response)
-                    })
+                    })*/
                 setNewBank(true)
             }
             get_token()

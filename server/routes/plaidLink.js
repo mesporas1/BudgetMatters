@@ -188,8 +188,11 @@ function router(nav) {
                // });
               }
               debug(transactionsResponse.transactions);
-              const transactions = db.collection('transactions')
-              await transactions.insert(transactionsResponse.transactions)
+              async function updateTransactions() {
+                const transactions = db.collection('transactions')
+                await transactions.insert(transactionsResponse.transactions)
+              }
+              updateTransactions()
               //return response.json({ error: null, transactions: transactionsResponse });
 
             }
