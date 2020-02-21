@@ -3,13 +3,15 @@ const { MongoClient } = require('mongodb');
 const debug = require('debug')('app:plaidLink');
 const plaid = require('plaid');
 const moment = require('moment');
-//const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 if (process.env.NODE_ENV !== 'production') require('dotenv').config()
 
 const webhookRouter = express.Router();
 const {
   PLAID_CLIENT_ID, PLAID_SECRET, PLAID_PUBLIC_KEY, PLAID_ENV, PLAID_PRODUCTS, PLAID_COUNTRY_CODES
 } = process.env;
+
+const KEY_CACHE = {}
 
 const client = new plaid.Client(
     PLAID_CLIENT_ID,
@@ -20,15 +22,32 @@ const client = new plaid.Client(
   );
 
 /*function verifyJWT(req){
-    signed_jwt = req.header('Plaid-Verification')
-    current_key_id = jwt.decode(signed_jwt)
-}*/
+    signed_jwt = req.get('Plaid-Verification')
+    current_key_id = jwt.decode(signed_jwt, {complete:true}).header.kid
+    if (!(current_key_id in KEY_CACHE)){
+        const keys_ids_to_update = []
+        for (const key in KEY_CACHE){
+            client.getWebhookVerificationKey(current_key_id, (err, result) => {
+                if (err){
+                    return false
+                }
+                KEY_CACHE.current_key_id = result.key
+            })
+        }
+        
+    }
+    
 
+
+}*/
 
 function router(nav) {
     webhookRouter.route('/transactions')
     .post((request, response, next) => {
       //console.log(request.body)
+      //const JWK = verifyJWT(request)
+      //jwt.verify
+
       const startDate = moment()
         .subtract(30, 'days')
         .format('YYYY-MM-DD');
