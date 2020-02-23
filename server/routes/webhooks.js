@@ -25,21 +25,38 @@ const client = new plaid.Client(
     signed_jwt = req.get('Plaid-Verification')
     current_key_id = jwt.decode(signed_jwt, {complete:true}).header.kid
     if (!(current_key_id in KEY_CACHE)){
-        const keys_ids_to_update = []
-        for (const key in KEY_CACHE){
-            client.getWebhookVerificationKey(current_key_id, (err, result) => {
-                if (err){
-                    return false
-                }
-                KEY_CACHE.current_key_id = result.key
-            })
-        }
+        const keys_ids_to_update = Object.keys(KEY_CACHE).filter(key => 
+            key['expired_at'] == null
+          )
+        keys_ids_to_update.append(current_key_id)
         
+        for (const key in keys_ids_to_update){
+          client.getWebhookVerificationKey(key, (err, result) => {
+              if (err){
+                  continue
+              }
+              KEY_CACHE.key = result.key
+          })
+        }
+      }
+    // If the key is not in the cache, it may be expired
+    if (!(current_key_id in KEY_CACHE)){
+      return false
     }
+
+    // Fetch the current key from the cache
+    key = KEY_CACHE[current_key_id];
+
+    // Reject expired keys
+    if (key['expired_at']){
+      return false
+    }
+
+    // Validate the signature and etract the claims
+    const claims = jwt.verify
+      
+    }*/
     
-
-
-}*/
 
 function router(nav) {
     webhookRouter.route('/transactions')
