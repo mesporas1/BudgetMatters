@@ -4,6 +4,7 @@ const debug = require('debug')('app:plaidLink');
 const plaid = require('plaid');
 const moment = require('moment');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 if (process.env.NODE_ENV !== 'production') require('dotenv').config()
 
 const webhookRouter = express.Router();
@@ -21,7 +22,7 @@ const client = new plaid.Client(
     { version: '2019-05-29', clientApp: 'Plaid Quickstart' }
   );
 
-/*function verifyJWT(req){
+function verifyJWT(req){
     signed_jwt = req.get('Plaid-Verification')
     current_key_id = jwt.decode(signed_jwt, {complete:true}).header.kid
     if (!(current_key_id in KEY_CACHE)){
@@ -53,9 +54,23 @@ const client = new plaid.Client(
     }
 
     // Validate the signature and etract the claims
-    const claims = jwt.verify
-      
-    }*/
+    const claims = jwt.verify(signed_jwt, key, {algorithsm:['ES256']}, function(err, payload){
+      if (err){
+        return false
+      }
+    })
+    
+    //Ensure that the token is not expired
+    if (claims["iat"] < Math.floor(Date.now() / 1000) - 5 * 60)
+      return false
+    }
+    
+    //Compute the hash of the body
+    //Ensure that the hash of the body matches the claim.
+    //Use constant time comparison to prevent timing attacks.
+    const body_hash = crytpo.createHmac('sha256').update(req.body).digest('hex');
+    return crypto.timingSafeEqual(body_hash, claims['request_body_sha256']);
+
     
 
 function router(nav) {
@@ -69,7 +84,7 @@ function router(nav) {
         .subtract(30, 'days')
         .format('YYYY-MM-DD');
       const endDate = moment().format('YYYY-MM-DD');
-      const { item_id } = request.body;
+      const { item_id } = request.body; 
       const { new_transactions } = request.body;
       (async function getTransactions() {
         try {
