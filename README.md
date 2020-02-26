@@ -29,7 +29,7 @@ After installation, open up two terminals and run ''' npm start ''' in both the 
 
 This application is deployed using Heroku.
 
-If you choose to deploy this application, the config vars and MongoDb database needs to be set up.
+If you choose to deploy this application, the config vars and MongoDb database need to be set up.
 The specific env variables used in this are:
 ```
   PLAID_CLIENT_ID='your plaid client id'
