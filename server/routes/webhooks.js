@@ -114,10 +114,31 @@ function router(nav) {
                 return response.json({ error })
               }
               else{
-                debug(transactionsResponse.transactions);
+                // debug(transactionsResponse.transactions);
                 async function updateTransactions() {
-                  const transactions = db.collection('transactions')
-                  await transactions.insert(transactionsResponse.transactions)
+                  const transactions = db.collection('transactions') 
+                  parsedTransactions = transactionsResponse.transactions.map(transaction => {
+                    const {transaction_id, account_id, amount, date, name} = transaction;
+                    await transactions.findOne({transaction_id:transaction_id}, 
+                      (err, result)=> {
+                        if (err){
+                          return {
+                            transaction_id: transaction_id,
+                            account_id: account_id, 
+                            amount: amount,
+                            date: date,
+                            name: name,
+                            category: null
+                          }
+                        }
+                        else{
+                          continue
+                        }
+                    })
+                    
+                    
+                  })
+                  await transactions.insertMany(parsedTransactions)
                 }
                 updateTransactions()
               }

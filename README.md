@@ -39,6 +39,10 @@ The specific env variables used in this are:
   PLAID_COUNTRY_CODES=US,CA,GB,FR,ES
   PLAID_PRODUCTS=transactions
   MONGODB_URI='your mongodb uri'
+  REACT_APP_PLAID_PUBLIC_KEY='your plaid public key'
+  REACT_APP_PLAID_ENV=sandbox
+  REACT_APP_PLAID_PRODUCTS=transactions
+  REACT_APP_WEBHOOK='your preferred webhook for transaction updates'
 ```
 After creating a Plaid account, the plaid api keys can be found at https://dashboard.plaid.com/account/keys
 
