@@ -1,6 +1,6 @@
 const express = require('express');
 const { MongoClient } = require('mongodb');
-const debug = require('debug')('app:plaidLink');
+const debug = require('debug')('app:webhooks');
 const plaid = require('plaid');
 const moment = require('moment');
 const jwt = require('jsonwebtoken');
@@ -23,6 +23,7 @@ const client = new plaid.Client(
   );
 
 function verifyJWT(req){
+    
     signed_jwt = req.get('Plaid-Verification')
     current_key_id = jwt.decode(signed_jwt, {complete:true}).header.kid
     if (!(current_key_id in KEY_CACHE)){
@@ -61,15 +62,15 @@ function verifyJWT(req){
     })
     
     //Ensure that the token is not expired
-    if (claims["iat"] < Math.floor(Date.now() / 1000) - 5 * 60)
+    if (claims["iat"] < Math.floor(Date.now() / 1000) - 5 * 60){
       return false
     }
-    
     //Compute the hash of the body
     //Ensure that the hash of the body matches the claim.
     //Use constant time comparison to prevent timing attacks.
-    const body_hash = crytpo.createHmac('sha256').update(req.body).digest('hex');
+    const body_hash = crypto.createHash('sha256').update(req.body).digest('hex');
     return crypto.timingSafeEqual(body_hash, claims['request_body_sha256']);
+  }
 
     
 
@@ -79,13 +80,17 @@ function router(nav) {
       //console.log(request.body)
       //const JWK = verifyJWT(request)
       //jwt.verify
-
+      debug(request.body)
       const startDate = moment()
         .subtract(30, 'days')
         .format('YYYY-MM-DD');
       const endDate = moment().format('YYYY-MM-DD');
       const { item_id } = request.body; 
       const { new_transactions } = request.body;
+      debug(new_transactions);
+      if (new_transactions === 0){
+        return response.sendStatus(200);
+      }
       (async function getTransactions() {
         try {
           const db = request.app.locals.db
@@ -106,26 +111,40 @@ function router(nav) {
             (error, transactionsResponse) => {
               if (error != null) {
                 debug(error);
-                //return response.json({
-                 // error
-               // });
+                return response.json({ error })
               }
-              debug(transactionsResponse.transactions);
-              async function updateTransactions() {
-                const transactions = db.collection('transactions')
-                await transactions.insert(transactionsResponse.transactions)
+              else{
+                debug(transactionsResponse.transactions);
+                async function updateTransactions() {
+                  const transactions = db.collection('transactions')
+                  await transactions.insert(transactionsResponse.transactions)
+                }
+                updateTransactions()
               }
-              updateTransactions()
+              
               //return response.json({ error: null, transactions: transactionsResponse });
 
             }
           );
-          response.sendStatus(200);
+          return response.sendStatus(200);
         } catch (err) {
           debug(err);
-          response.sendStatus(500);
+          //response.sendStatus(500);
         }
       }());
+    });
+    webhookRouter.route('/test')
+      .post((request, response, next) => {
+        const { ACCESS_TOKEN } = request.body
+        client.sandboxItemFireWebhook(ACCESS_TOKEN, 'DEFAULT_UPDATE', (err, fire_webhook_response) => {
+          if (err != null) {
+            debug(err);
+            return response.json({ err });
+          }
+          else{
+            return response.json(fire_webhook_response);
+          }
+      });
     });
   return webhookRouter;
 }

@@ -70,8 +70,6 @@ function router(nav) {
         const { institution } = request.body;
         // debug(institution);
         const { username } = request.user;
-        debug("something is wrong 3")
-        debug(request);
         (async function addItem() {
           try {
             const db = request.app.locals.db
