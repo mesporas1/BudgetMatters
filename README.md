@@ -31,7 +31,7 @@ This application is deployed using Heroku.
 
 If you choose to deploy this application, the config vars and MongoDb database needs to be set up.
 The specific env variables used in this are:
-'''
+```
   PLAID_CLIENT_ID='your plaid client id'
   PLAID_PUBLIC_KEY='your plaid public key'
   PLAID_SECRET='your plaid secret key'
@@ -39,7 +39,7 @@ The specific env variables used in this are:
   PLAID_COUNTRY_CODES=US,CA,GB,FR,ES
   PLAID_PRODUCTS=transactions
   MONGODB_URI='your mongodb uri'
-'''
+```
 After creating a Plaid account, the plaid api keys can be found at https://dashboard.plaid.com/account/keys
 
 For mongodb, I used Heroku's mLab add-on. You could use any other mongodb resource that better suits your purposes.
