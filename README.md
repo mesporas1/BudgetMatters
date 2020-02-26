@@ -23,7 +23,7 @@ cd .. # Go to the root directory
 npm install
 ```
 
-After installation, open up two terminals and run ''' npm start ''' in both the react-ui directory and the root directory.
+After installation, open up two terminals and run ``` npm start ``` in both the react-ui directory and the root directory.
 
 ## Deployment
 
