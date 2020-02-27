@@ -77,10 +77,17 @@ function verifyJWT(req){
 function router(nav) {
     webhookRouter.route('/transactions')
     .post((request, response, next) => {
-      //console.log(request.body)
-      //const JWK = verifyJWT(request)
-      //jwt.verify
-      debug(request.body)
+      debug(request.body.webhook_code)
+      switch (request.body.webhook_code) {
+        case 'INITIAL_UPDATE':
+          break;
+        case 'DEFAULT_UPDATE':
+          break;
+        case 'HISTORICAL_UPDATE':
+          return response.sendStatus(200);
+        default:
+          return response.sendStatus(200);
+      }
       const startDate = moment()
         .subtract(30, 'days')
         .format('YYYY-MM-DD');
@@ -119,32 +126,20 @@ function router(nav) {
                   const transactions = db.collection('transactions') 
                   parsedTransactions = transactionsResponse.transactions.map(transaction => {
                     const {transaction_id, account_id, amount, date, name} = transaction;
-                    await transactions.findOne({transaction_id:transaction_id}, 
-                      (err, result)=> {
-                        if (err){
-                          return {
-                            transaction_id: transaction_id,
-                            account_id: account_id, 
-                            amount: amount,
-                            date: date,
-                            name: name,
-                            category: null
-                          }
-                        }
-                        else{
-                          continue
-                        }
-                    })
-                    
-                    
+                    return {
+                      transaction_id: transaction_id,
+                      account_id: account_id, 
+                      amount: amount,
+                      date: date,
+                      name: name,
+                      category: null,
+                      username: bank.username
+                    }
                   })
                   await transactions.insertMany(parsedTransactions)
                 }
                 updateTransactions()
               }
-              
-              //return response.json({ error: null, transactions: transactionsResponse });
-
             }
           );
           return response.sendStatus(200);

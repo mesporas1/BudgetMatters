@@ -18,7 +18,6 @@ function router(nav) {
           const col = db.collection('banks');
 
           const banks = await col.find(req.user.username).toArray();
-          debug(banks);
 
           return res.json({ banks });
         } catch (err) {
@@ -26,6 +25,23 @@ function router(nav) {
         }
       }());
     });
+  userRouter.route('/getTransactions')
+    .get((req, res, next) => {
+      // Pull transactions for the Item for the last 30 days
+      (async function getBanks() {
+        try {
+          const db = req.app.locals.db
+
+          const col = db.collection('transactions');
+
+          const transactions = await col.find(req.user.username).toArray();
+
+          return res.json({ transactions });
+        } catch (err) {
+          return res.json({err});
+        }
+      }());
+    });   
   userRouter.route('/remove')
     .post((req, res, next) => {
       // Pull transactions for the Item for the last 30 days

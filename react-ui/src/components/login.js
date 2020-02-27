@@ -1,13 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import '../App.css';
+import Banks from "./Banks";
+
 
 // eslint-disable-next-line
 const axios = require('axios');
 axios.defaults.withCredentials = true;
 
 function LoginForm(props){
-    const [user, setUser] = useState('Enter username');
-    const [password, setPassword] = useState('Enter password');
+    const [user, setUser] = useState('');
+    const [password, setPassword] = useState('');
 
     const [responseText, setResponse] = useState({apiResponse: 'Please log in'});
     useEffect(() => {
@@ -42,10 +44,12 @@ function LoginForm(props){
       }
 
     return  <div> {props.userCreds.loggedIn ? 
-    <div> <h2> Welcome user! </h2> </div> :
+    <div> <Banks></Banks>  </div> :
         <div> <form onSubmit={handleSubmit}>
-        <input onChange={e => setUser(e.target.value)} value={user}></input>
-        <input onChange={e => setPassword(e.target.value)} value={password}></input>
+        <label for="username">Username: </label>
+        <input id="username" onChange={e => setUser(e.target.value)} value={user}></input>
+        <label for="pass">Password: </label>
+        <input id="pass" type="password" onChange={e => setPassword(e.target.value)} value={password}></input>
         <button type="submit" disabled={!validateForm()}> Log in</button>
     </form>        
     <p>{responseText.apiResponse}</p> </div> 
