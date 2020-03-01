@@ -44,7 +44,7 @@ function App(props) {
   }
 
   return <div className="App container">
-    { userCreds.loggedIn ? <div><Link to="/budget">Check Transactions</Link> <Link to="/banks">Add banks</Link> <button onClick={handleLogout} type="button"> Logout</button>  </div>
+    { userCreds.loggedIn ? <div><Link to="/categories">Check Categories</Link> <Link to="/banks">Add banks</Link> <button onClick={handleLogout} type="button"> Logout</button>  </div>
       : <Link to="/">Login</Link>   
     }
           <Routes appProps={{ userCreds, userHasAuthenticated }} />

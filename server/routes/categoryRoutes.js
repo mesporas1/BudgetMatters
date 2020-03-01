@@ -13,17 +13,13 @@ function router(nav) {
       const { categoryName } = req.body;
       
       (async function addcategory() {
-        let client;
         try {
           const db = req.app.locals.db
 
           const col = db.collection('categories');
-          const category = { categoryName };
+          const category = { name: categoryName };
           const results = await col.insertOne(category);
-          debug(results);
-          req.login(results.ops[0], () => {
-            res.json({ categoryName: category });
-          });
+          return res.json({ categoryName: category });
         } catch (err) {
           debug(err);
         }
@@ -39,9 +35,8 @@ function router(nav) {
           const col = db.collection('categories');
 
           const categories = await col.find().toArray();
-          debug(categories);
 
-          res.render('categories', { categories });
+          return res.json({ categories });
         } catch (err) {
           debug(err);
         }
