@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import '../App.css';
+import CategorySelection from './CategorySelection';
 const axios = require('axios');
 
 function Transactions(props){
@@ -16,7 +17,7 @@ function Transactions(props){
             return <tr key = {transaction._id}>
                 <th>{transaction.name}</th>
                 <th>{transaction.amount}</th>
-                <th>{transaction.category}</th>
+                <th><CategorySelection category={transaction.category}></CategorySelection></th>
                 <th>{transaction.date}</th>
             </tr>
             })))

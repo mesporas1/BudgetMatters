@@ -27,7 +27,7 @@ function Categories(props){
         try {
             const add_category = async () => {
                 await axios.post('/category/add',{
-                    categoryName: newCategory
+                    categoryName: category
                     })
                     /*.then(() => {
                         const url = '/plaid/transactions/' + metadata.institution.name

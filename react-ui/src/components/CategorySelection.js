@@ -5,7 +5,7 @@ const axios = require('axios');
 function CategorySelection(props){
     
     const [categories, setCategories] = useState(<th> No categories </th>);
-    const [newCategory, setNewCategory] = useState('');
+    const [newCategory, setNewCategory] = useState(props.category);
     const [isFetching, setIsFetching] = useState(false);
   
     useEffect(() => {
@@ -13,10 +13,7 @@ function CategorySelection(props){
       const fetchCategories = async () => {
             const result = await axios.get('/category/getAll')
             setCategories(result.data.categories.map((function(category){
-            return <tr key = {category._id}>
-                <th>{category.name}</th>
-                <option ></option>
-            </tr>
+                return <option value={category.name}>{category.name}</option>
             })))
             setIsFetching(false)
       }
@@ -27,7 +24,7 @@ function CategorySelection(props){
         try {
             const add_category = async () => {
                 await axios.post('/category/add',{
-                    categoryName: newCategory
+                    categoryName: category
                     })
                     /*.then(() => {
                         const url = '/plaid/transactions/' + metadata.institution.name
@@ -45,19 +42,9 @@ function CategorySelection(props){
     }
     }
     return <div>
-    <select value={props.category} onChange={updateCategory}>
-        { categories }
-    </select>
-    <form onSubmit={() => {
-            addCategory(newCategory)
-        }}>
-            <input type="text"
-                value={newCategory}
-                onChange={event => setNewCategory(event.target.value)}
-            ></input>
-            <button type="submit">Add Category</button>
-        </form>
-
+        <select value={newCategory} onChange={e => setNewCategory(e.target.value)}>
+            { categories }
+        </select>
     </div>
     
 }
