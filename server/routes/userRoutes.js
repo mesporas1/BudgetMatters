@@ -42,24 +42,28 @@ function router(nav) {
         }
       }());
     });   
-  userRouter.route('/remove')
+  userRouter.route('/updateTransaction')
     .post((req, res, next) => {
       // Pull transactions for the Item for the last 30 days
-      const { categoryId } = req.body;
-      (async function getAccessToken() {
+      const { transactionId, category } = req.body;
+      debug(transactionId);
+      debug(category);
+      (async function updateTransaction() {
         try {
           const db = req.app.locals.db
 
-          const col = db.collection('categories');
-          debug(categoryId);
-          await col.deleteOne({ _id: new mongodb.ObjectID(categoryId) });
-          const categories = await col.find().toArray();
+          const col = db.collection('transactions');
+          const update = await col.updateOne(
+            { transaction_id: transactionId },
+            {
+              $set: {'category': category}
+            }
+          );
 
-          debug(categories);
-
-          res.render('categories', { categories });
+          return res.sendStatus(200);
         } catch (err) {
           debug(err);
+          return res.sendStatus(500);
         }
       }());
     });
