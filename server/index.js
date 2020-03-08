@@ -36,12 +36,6 @@ if (!isDev && cluster.isMaster) {
   // Priority serve any static files.
   app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
 
-  // Answer API requests.
-  app.get('/api', function (req, res) {
-    res.set('Content-Type', 'application/json');
-    res.send('{"message":"Hello from the custom server!"}');
-  });
-
   // Logging.. i think..
   app.use(morgan('tiny'));
   app.use(bodyParser.json());
@@ -67,19 +61,31 @@ if (!isDev && cluster.isMaster) {
   app.listen(PORT, () => {
     debug(`Node ${isDev ? 'dev server' : 'cluster worker '+process.pid}: listening on port ${PORT}`);
   });
-});
-
+  });
+  const {
+    WP_PUBLIC_KEY, WP_PRIVATE_KEY
+  } = process.env;
+  
+  const mailto = 'mailto:' + process.env.WP_EMAIL
+  webpush.setVapidDetails(
+    mailto,
+    WP_PUBLIC_KEY,
+    WP_PRIVATE_KEY
+  );
+  
   const authRouter = require('./routes/authRoutes')();
   const plaidRouter = require('./routes/plaidLink')();
   const categoryRouter = require('./routes/categoryRoutes')();
   const userRouter = require('./routes/userRoutes')();
   const webhookRouter = require('./routes/webhooks')();
+  const pushRouter = require('./routes/push')();
 
   app.use('/auth', authRouter);
   app.use('/plaid', plaidRouter);
   app.use('/category', categoryRouter);
   app.use('/user', userRouter);
   app.use('/webhooks', webhookRouter);
+  app.use('/push', pushRouter);
   
   // All remaining requests return the React app, so it can handle routing.
   app.get('*', function(request, response) {

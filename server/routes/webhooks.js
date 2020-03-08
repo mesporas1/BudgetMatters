@@ -5,6 +5,7 @@ const plaid = require('plaid');
 const moment = require('moment');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const webpush = require('web-push');
 if (process.env.NODE_ENV !== 'production') require('dotenv').config()
 
 const webhookRouter = express.Router();
@@ -80,17 +81,37 @@ function router(nav) {
       debug(request.body.webhook_code)
       switch (request.body.webhook_code) {
         case 'INITIAL_UPDATE':
+          transactionUpdate(request, response)
           break;
         case 'DEFAULT_UPDATE':
+          transactionUpdate(request, response)
           break;
         case 'HISTORICAL_UPDATE':
           return response.sendStatus(200);
         default:
           return response.sendStatus(200);
       }
+    });
+    webhookRouter.route('/test')
+      .post((request, response, next) => {
+        const { ACCESS_TOKEN } = request.body
+        client.sandboxItemFireWebhook(ACCESS_TOKEN, 'DEFAULT_UPDATE', (err, fire_webhook_response) => {
+          if (err != null) {
+            debug(err);
+            return response.json({ err });
+          }
+          else{
+            return response.json(fire_webhook_response);
+          }
+      });
+    });
+  return webhookRouter;
+}
+
+function transactionUpdate(request,response){
       const startDate = moment()
-        .subtract(30, 'days')
-        .format('YYYY-MM-DD');
+            .subtract(30, 'days')
+            .format('YYYY-MM-DD');
       const endDate = moment().format('YYYY-MM-DD');
       const { item_id } = request.body; 
       const { new_transactions } = request.body;
@@ -132,7 +153,7 @@ function router(nav) {
                       amount: amount,
                       date: date,
                       name: name,
-                      category: null,
+                      category: "None",
                       username: bank.username
                     }
                   })
@@ -142,27 +163,47 @@ function router(nav) {
               }
             }
           );
-          return response.sendStatus(200);
+          if (request.body.webhook_code == 'DEFAULT_UPDATE'){
+            sendNotification(bank.username, request, response)
+          }
+          else{
+            return response.sendStatus(200);
+          }        
         } catch (err) {
           debug(err);
           //response.sendStatus(500);
         }
       }());
-    });
-    webhookRouter.route('/test')
-      .post((request, response, next) => {
-        const { ACCESS_TOKEN } = request.body
-        client.sandboxItemFireWebhook(ACCESS_TOKEN, 'DEFAULT_UPDATE', (err, fire_webhook_response) => {
-          if (err != null) {
-            debug(err);
-            return response.json({ err });
-          }
-          else{
-            return response.json(fire_webhook_response);
-          }
-      });
-    });
-  return webhookRouter;
+    }
+
+function sendNotification(user, req, res){
+  (async function getSubscription() {
+    try {
+        const db = req.app.locals.db
+
+        const sub = db.collection('subscriptions');
+        const trans = db.collection('transactions');
+        const userSub = await sub.find(user).subscription;
+        const userTrans = await trans.find({
+          username: user,
+          category: "None"
+        }).toArray();
+        const dataToSend = "Dummy data";
+        const triggerPushMsg = await webpush.sendNotification(userSub, userTrans)
+          .catch((err) => {
+            if (err.statusCode === 410){
+              await col.deleteOne(user)
+            }
+            else {
+              console.log('Subscription not valid', err);
+            }
+          })
+        return res.sendStatus(200);
+      } catch (err) {
+      debug(err);
+      return res.sendStatus(500);
+    }
+  }());
 }
 
 module.exports = router;
