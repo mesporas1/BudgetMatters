@@ -30,7 +30,7 @@ function router(nav) {
         if (isValidSaveRequest){
             (async function saveSubscription() {
                 try {
-                    const db = request.app.locals.db
+                    const db = req.app.locals.db
         
                     const col = db.collection('subscriptions');
                     const results = await col.insertOne(

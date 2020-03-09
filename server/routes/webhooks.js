@@ -192,7 +192,10 @@ function sendNotification(user, req, res){
         const triggerPushMsg = await webpush.sendNotification(userSub, userTrans)
           .catch((err) => {
             if (err.statusCode === 410){
-              await col.deleteOne(user)
+              async function delSub(user){
+                await col.deleteOne(user)
+              }
+              delSub(user)
             }
             else {
               console.log('Subscription not valid', err);

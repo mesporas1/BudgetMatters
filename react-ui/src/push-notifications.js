@@ -15,13 +15,22 @@ function urlB64ToUint8Array(base64String) {
     return outputArray;
 }
 
+function checkIfPushSupported(){
+  if ('serviceWorker' in navigator && 'PushManager' in window) {
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
 function registerServiceWorker(){
     if ('serviceWorker' in navigator && 'PushManager' in window) {
         console.log('Service Worker and Push is supported');
       
         navigator.serviceWorker.register('/sw.js')
         .then(function(reg) {
-          console.log('Service Worker is registered', swReg);
+          console.log('Service Worker is registered', reg);
       
           return reg;
         })
@@ -56,7 +65,7 @@ function askPermission() {
 //Subscribes the user to push notifications and returns a push subscription
 // The pushSubscription needs to be JSON.stringfied
 function subscribeUserToPush() {
-    return getSWRegistration()
+    return navigator.serviceWorker.register('/sw.js')
     .then(function(registration) {
       const subscribeOptions = {
         userVisibleOnly: true,
@@ -75,27 +84,24 @@ function subscribeUserToPush() {
 
   //Sends subscription to server
 function sendSubscriptionToBackEnd(subscription) {
-    return axios.post('/api/save-subscription/', {
+    console.log(subscription);
+    return axios.post('/push/save-subscription/', {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(subscription)
-    })
+      body: subscription
+    }
+    )
     .then(function(response) {
-      if (!response.ok) {
-        throw new Error('Bad status code from server.');
-      }
-  
-      return response.json();
+      console.log(response);
     })
-    .then(function(responseData) {
-      if (!(responseData.data && responseData.data.success)) {
-        throw new Error('Bad response from server.');
-      }
+    .catch(function(e){
+      console.log(e);
     });
   }
 
   export {
+    checkIfPushSupported,
     registerServiceWorker,
     askPermission,
     subscribeUserToPush,

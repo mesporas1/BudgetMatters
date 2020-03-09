@@ -3,6 +3,7 @@ import PlaidLink from 'react-plaid-link';
 import '../App.css';
 import Transactions from "./Transactions";
 import Categories from "./Categories";
+import NotButton from "./NotButton";
 const axios = require('axios');
 
 function Banks(props){
@@ -69,6 +70,7 @@ function Banks(props){
 
     </table>
     <Transactions></Transactions>
+    <NotButton></NotButton>
     </div>
     
 }
