@@ -36,7 +36,7 @@ function router(nav) {
                     const results = await col.insertOne(
                             {
                             "subscription":req.body,
-                            "user":req.user.username
+                            "username":req.user.username
                             }
                         );
                     res.setHeader('Content-Type', 'application/json');

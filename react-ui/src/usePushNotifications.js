@@ -19,20 +19,24 @@ export default function usePushNotifications(){
         };
     }, []);
 
-    const onClickAskUserPermission = () => {
-        setLoading(true);
-        setError(false);
-        askPermission().then(consent => {
-            setUserConsent(consent);
-            if (consent !== consent){
-                setError({
-                    name: "Consent denied",
-                    message: "You denied the consent to receive notifications",
-                    code: 0
-                })
-            }
-        });
-        subscribeUserToPush().then(function(subscription){
+    const ask = async () => {
+            setLoading(true);
+            setError(false);
+            await askPermission().then(consent => {
+                setUserConsent(consent);
+                if (consent !== consent){
+                    setError({
+                        name: "Consent denied",
+                        message: "You denied the consent to receive notifications",
+                        code: 0
+                    })
+                }
+            });
+        }
+    
+
+    const subscribe = async () => {
+        await subscribeUserToPush().then(function(subscription){
             setUserSubscription(subscription);
             sendSubscriptionToBackEnd(subscription)
         })
@@ -42,6 +46,11 @@ export default function usePushNotifications(){
         
         setLoading(false);
     };
+    
+    const onClickAskUserPermission = () => {
+        ask();
+        subscribe();
+    }
 
     return {
         onClickAskUserPermission,

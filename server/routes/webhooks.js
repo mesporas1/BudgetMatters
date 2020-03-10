@@ -97,6 +97,7 @@ function router(nav) {
         const { ACCESS_TOKEN } = request.body
         client.sandboxItemFireWebhook(ACCESS_TOKEN, 'DEFAULT_UPDATE', (err, fire_webhook_response) => {
           if (err != null) {
+            debug('what');
             debug(err);
             return response.json({ err });
           }
@@ -109,6 +110,7 @@ function router(nav) {
 }
 
 function transactionUpdate(request,response){
+      debug("WHATS GOING ON")
       const startDate = moment()
             .subtract(30, 'days')
             .format('YYYY-MM-DD');
@@ -116,9 +118,9 @@ function transactionUpdate(request,response){
       const { item_id } = request.body; 
       const { new_transactions } = request.body;
       debug(new_transactions);
-      if (new_transactions === 0){
+      /*if (new_transactions === 0){
         return response.sendStatus(200);
-      }
+      }*/
       (async function getTransactions() {
         try {
           const db = request.app.locals.db
@@ -133,11 +135,12 @@ function transactionUpdate(request,response){
             startDate,
             endDate,
             {
-              count: new_transactions,
+              count: 30,
               offset: 0
             },
             (error, transactionsResponse) => {
               if (error != null) {
+                debug("this  is where plaid errors! 1")
                 debug(error);
                 return response.json({ error })
               }
@@ -163,8 +166,11 @@ function transactionUpdate(request,response){
               }
             }
           );
+          debug(request.body.webhook_code);
           if (request.body.webhook_code == 'DEFAULT_UPDATE'){
+            debug("sending notifications..");
             sendNotification(bank.username, request, response)
+            return response.sendStatus(200);
           }
           else{
             return response.sendStatus(200);
@@ -183,25 +189,29 @@ function sendNotification(user, req, res){
 
         const sub = db.collection('subscriptions');
         const trans = db.collection('transactions');
-        const userSub = await sub.find(user).subscription;
+        const userSub = await sub.find({username:user}).toArray();
         const userTrans = await trans.find({
           username: user,
           category: "None"
         }).toArray();
+        debug(userSub[0].subscription.body)
+        //debug(userTrans)
         const dataToSend = "Dummy data";
-        const triggerPushMsg = await webpush.sendNotification(userSub, userTrans)
+        for (let i = 0; i < userSub.length; i++){
+          webpush.sendNotification(userSub[i].subscription.body, dataToSend)
           .catch((err) => {
-            if (err.statusCode === 410){
+            debug(err.statusCode);
+            /*if (err.statusCode === 410){
               async function delSub(user){
-                await col.deleteOne(user)
+                await sub.deleteOne(user)
               }
               delSub(user)
             }
             else {
               console.log('Subscription not valid', err);
-            }
+            }*/
           })
-        return res.sendStatus(200);
+        }
       } catch (err) {
       debug(err);
       return res.sendStatus(500);
