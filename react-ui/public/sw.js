@@ -1,17 +1,56 @@
 self.addEventListener('push', function(event) {
-    if (event.data) {
-      console.log('This push event has data: ', event.data.text());
-    } else {
-      console.log('This push event has no data.');
-    }
+  const title = 'Actions Notification';
+  const options = {
+    actions: [
+      {
+        action: 'coffee-action',
+        title: 'Coffee',
+        icon: '/images/demos/action-1-128x128.png'
+      },
+      {
+        action: 'doughnut-action',
+        title: 'Doughnut',
+        icon: '/images/demos/action-2-128x128.png'
+      },
+      {
+        action: 'gramophone-action',
+        title: 'gramophone',
+        icon: '/images/demos/action-3-128x128.png'
+      },
+      {
+        action: 'atom-action',
+        title: 'Atom',
+        icon: '/images/demos/action-4-128x128.png'
+      }
+    ]
+  };
+  const promiseChain = self.registration.showNotification(title, options);
+
+  event.waitUntil(promiseChain);
   });
   
   self.addEventListener('notificationclick', function(event) {
-    console.log('[Service Worker] Notification click Received.');
+    if (!event.action) {
+      // Was a normal notification click
+      console.log('Notification Click.');
+      return;
+    }
   
-    event.notification.close();
-  
-    event.waitUntil(
-      clients.openWindow('https://developers.google.com/web/')
-    );
+    switch (event.action) {
+      case 'coffee-action':
+        console.log('User ❤️️\'s coffee.');
+        break;
+      case 'doughnut-action':
+        console.log('User ❤️️\'s doughnuts.');
+        break;
+      case 'gramophone-action':
+        console.log('User ❤️️\'s music.');
+        break;
+      case 'atom-action':
+        console.log('User ❤️️\'s science.');
+        break;
+      default:
+        console.log(`Unknown action clicked: '${event.action}'`);
+        break;
+    }
   });
