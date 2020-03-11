@@ -196,11 +196,13 @@ function sendNotification(user, req, res){
         }).toArray();
         debug(userSub[0].subscription.body)
         //debug(userTrans)
-        const dataToSend = "Dummy data";
+        const dataToSend = JSON.stringify(userTrans);
+        debug(dataToSend)
         for (let i = 0; i < userSub.length; i++){
-          webpush.sendNotification(userSub[i].subscription.body, dataToSend)
+          webpush.sendNotification(userSub[i].subscription.body)
           .catch((err) => {
             debug(err.statusCode);
+            debug(err);
             /*if (err.statusCode === 410){
               async function delSub(user){
                 await sub.deleteOne(user)
