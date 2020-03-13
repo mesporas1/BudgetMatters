@@ -13,6 +13,7 @@ function NotButton(props){
         userConsent,
         pushNotificationSupported,
         error,
+        buttonText,
         loading
     } = usePushNotifications();
 
@@ -28,7 +29,7 @@ function NotButton(props){
         <p>Push notifications are {!pushNotificationSupported && "NOT"} supported by your device</p>
         <p> User consent to receive notifications is <strong>{userConsent}</strong></p>
         <p>Push notifications allow you to view your new transactions</p>
-        <button onClick={onClickAskUserPermission}> Enable push notifications? </button>
+        <button disabled={userConsent == "granted"} onClick={onClickAskUserPermission}>{buttonText}</button>
         
     </div>
 };

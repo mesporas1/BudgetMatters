@@ -25,24 +25,19 @@ function checkIfPushSupported(){
 }
 
 function registerServiceWorker(){
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-        console.log('Service Worker and Push is supported');
-      
-        navigator.serviceWorker.register('/sw.js')
+  return navigator.serviceWorker.register('/sw.js')
         .then(function(reg) {
           console.log('Service Worker is registered', reg);
-      
+          reg.pushManager.subscribe({userVisibleOnly: true})
+            /*.then(function(sub){
+              console.log('endpoint', sub.endpoint)
+              reg.active.postMessage(JSON.stringify({uid: uid, token: token}))
+            })*/
           return reg;
         })
         .catch(function(error) {
           console.error('Service Worker Error', error);
-          return null;
-        });
-      } else {
-        console.warn('Push messaging is not supported');
-        return null;
-      }
-    
+        });      
 }
 
 function askPermission() {
@@ -59,6 +54,7 @@ function askPermission() {
       if (permissionResult !== 'granted') {
         throw new Error('We weren\'t granted permission.');
       }
+      return permissionResult
     });
   }
 

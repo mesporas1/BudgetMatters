@@ -106,6 +106,12 @@ function router(nav) {
           }
       });
     });
+    webhookRouter.route('/testNot')
+      .post((request, response, next) => {
+        const {user} = request.body
+        debug(user);
+        sendNotification(user,request,response)
+    });
   return webhookRouter;
 }
 
@@ -118,9 +124,9 @@ function transactionUpdate(request,response){
       const { item_id } = request.body; 
       const { new_transactions } = request.body;
       debug(new_transactions);
-      /*if (new_transactions === 0){
+      if (new_transactions === 0){
         return response.sendStatus(200);
-      }*/
+      }
       (async function getTransactions() {
         try {
           const db = request.app.locals.db
@@ -135,7 +141,7 @@ function transactionUpdate(request,response){
             startDate,
             endDate,
             {
-              count: 30,
+              count: new_transactions,
               offset: 0
             },
             (error, transactionsResponse) => {
@@ -182,6 +188,21 @@ function transactionUpdate(request,response){
       }());
     }
 
+/*function getSubscriptions(user, req, res){
+  (async function getSubscription(){
+    try{
+      const db = req.app.locals.db;
+
+      const sub = db.collection('transactions')
+      const userSubs = await sub.find({username: user}).toArray();
+      return userSubs;
+    } catch (err){
+      return null;
+    }
+  }());
+}*/
+
+
 function sendNotification(user, req, res){
   (async function getSubscription() {
     try {
@@ -194,24 +215,21 @@ function sendNotification(user, req, res){
           username: user,
           category: "None"
         }).toArray();
-        debug(userSub[0].subscription.body)
-        //debug(userTrans)
-        const dataToSend = JSON.stringify(userTrans);
-        debug(dataToSend)
+        debug(user)
         for (let i = 0; i < userSub.length; i++){
-          webpush.sendNotification(userSub[i].subscription.body)
+          webpush.sendNotification(userSub[i].subscription.body, user)
           .catch((err) => {
             debug(err.statusCode);
             debug(err);
-            /*if (err.statusCode === 410){
+            if (err.statusCode === 410){
               async function delSub(user){
-                await sub.deleteOne(user)
+                await sub.deleteOne({username:user})
               }
               delSub(user)
             }
             else {
               console.log('Subscription not valid', err);
-            }*/
+            }
           })
         }
       } catch (err) {

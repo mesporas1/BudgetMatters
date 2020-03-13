@@ -1,33 +1,46 @@
 self.addEventListener('push', function(event) {
-  console.log(event.data.json())
-  const title = 'Actions Notification';
-  const options = {
-    actions: [
-      {
-        action: 'coffee-action',
-        title: 'Coffee',
-        icon: '/images/demos/action-1-128x128.png'
-      },
-      {
-        action: 'doughnut-action',
-        title: 'Doughnut',
-        icon: '/images/demos/action-2-128x128.png'
-      },
-      {
-        action: 'gramophone-action',
-        title: 'gramophone',
-        icon: '/images/demos/action-3-128x128.png'
-      },
-      {
-        action: 'atom-action',
-        title: 'Atom',
-        icon: '/images/demos/action-4-128x128.png'
+  console.log(event.data.text())
+  const getUncatTrans = fetch('/users/getUncategorizedTransactions',
+    {
+      method: 'POST',
+      body: {username: event.data.text()}
+    }).then(function(response){
+      return response
+    }).then(function(response){
+      if (response.transactions.length() > 1){
+        const title = "You have new transactions! Would you like to categorize them?"
+        const options = {
+          actions:[
+            {
+              action: 'yes-action',
+              title: 'Yes!'
+            },
+            {
+              action: 'no-action',
+              title: 'No..'
+            }
+          ]
+        }
+          return self.registration.showNotification(title, options)
+        }
+      else if (response.transactions.length() == 1){
+        const title = "You have one new transactions! Categorize? Otherwise, close notification/open site!"
+        const options = {
+          actions:[
+            {
+              action: 'food-action',
+              title: 'Food!'
+            },
+            {
+              action: 'gas-action',
+              title: 'Gas!'
+            }
+          ]
+        }
+          return self.registration.showNotification(title, options)
       }
-    ]
-  };
-  const promiseChain = self.registration.showNotification(title, options);
-
-  event.waitUntil(promiseChain);
+      })
+    event.waitUntil(getUncatTrans)
   });
   
   self.addEventListener('notificationclick', function(event) {
@@ -55,3 +68,10 @@ self.addEventListener('push', function(event) {
         break;
     }
   });
+
+self.addEventListener('pushsubscriptionchange', function(event){
+  console.log('Subscription changed');
+  event.waitUntil(
+    self.registration.pushManager
+  )
+})
