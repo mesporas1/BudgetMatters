@@ -62,6 +62,8 @@ function router(nav) {
   userRouter.route('/getUncategorizedTransactions')
     .post((req, res, next) => {
       // Pull transactions for the Item for the last 30 days
+      debug(req.body);
+      debug(req.body.username);
       (async function getBanks() {
         try {
           const db = req.app.locals.db
@@ -69,10 +71,10 @@ function router(nav) {
           const col = db.collection('transactions');
 
           const transactions = await col.find({
-            username: req.user.username,
+            username: req.body.username,
             category: "None"
           }).toArray();
-
+          debug(transactions);
           return res.json({ transactions });
         } catch (err) {
           return res.json({err});

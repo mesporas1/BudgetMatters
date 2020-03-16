@@ -1,13 +1,16 @@
 self.addEventListener('push', function(event) {
   console.log(event.data.text())
-  const getUncatTrans = fetch('/users/getUncategorizedTransactions',
+  console.log({username: event.data.text()})
+  const getUncatTrans = fetch('/user/getUncategorizedTransactions',
     {
       method: 'POST',
-      body: {username: event.data.text()}
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({username: event.data.text()})
     }).then(function(response){
-      return response
+      console.log(response.json())
+      return response.json()
     }).then(function(response){
-      if (response.transactions.length() > 1){
+      if (response.transactions.length > 1){
         const title = "You have new transactions! Would you like to categorize them?"
         const options = {
           actions:[
@@ -23,7 +26,7 @@ self.addEventListener('push', function(event) {
         }
           return self.registration.showNotification(title, options)
         }
-      else if (response.transactions.length() == 1){
+      else if (response.transactions.length == 1){
         const title = "You have one new transactions! Categorize? Otherwise, close notification/open site!"
         const options = {
           actions:[
@@ -51,17 +54,17 @@ self.addEventListener('push', function(event) {
     }
   
     switch (event.action) {
-      case 'coffee-action':
-        console.log('User ❤️️\'s coffee.');
+      case 'yes-action':
+        console.log('User wants a change.');
         break;
-      case 'doughnut-action':
-        console.log('User ❤️️\'s doughnuts.');
+      case 'no-action':
+        console.log('User does not want a change.');
         break;
-      case 'gramophone-action':
-        console.log('User ❤️️\'s music.');
+      case 'food-action':
+        console.log('User changed to food.');
         break;
-      case 'atom-action':
-        console.log('User ❤️️\'s science.');
+      case 'gas-action':
+        console.log('User changed to gas.');
         break;
       default:
         console.log(`Unknown action clicked: '${event.action}'`);
@@ -69,9 +72,19 @@ self.addEventListener('push', function(event) {
     }
   });
 
-self.addEventListener('pushsubscriptionchange', function(event){
-  console.log('Subscription changed');
-  event.waitUntil(
-    self.registration.pushManager
-  )
-})
+  self.addEventListener('pushsubscriptionchange', function(event) {
+    console.log('Subscription expired');
+    event.waitUntil(
+      self.registration.pushManager.subscribe({ userVisibleOnly: true })
+      .then(function(subscription) {
+        console.log('Subscribed after expiration', subscription.endpoint);
+        return fetch('/push/save-subscription', {
+          method: 'post',
+          headers: {
+            'Content-type': 'application/json'
+          },
+          body: subscription
+          })
+        })
+    )}
+  );
