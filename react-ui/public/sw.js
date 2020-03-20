@@ -7,7 +7,6 @@ self.addEventListener('push', function(event) {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({username: event.data.text()})
     }).then(function(response){
-      console.log(response.json())
       return response.json()
     }).then(function(response){
       if (response.transactions.length > 1){
@@ -38,7 +37,9 @@ self.addEventListener('push', function(event) {
               action: 'gas-action',
               title: 'Gas!'
             }
-          ]
+          ],
+          data: {
+            trans_id: response.transactions[0].transaction_id}
         }
           return self.registration.showNotification(title, options)
       }
@@ -46,15 +47,16 @@ self.addEventListener('push', function(event) {
     event.waitUntil(getUncatTrans)
   });
   
-  self.addEventListener('notificationclick', function(event) {
+self.addEventListener('notificationclick', function(event) {
     if (!event.action) {
       // Was a normal notification click
       console.log('Notification Click.');
       return;
     }
-  
+    
     switch (event.action) {
       case 'yes-action':
+        openWindow(event);
         console.log('User wants a change.');
         break;
       case 'no-action':
@@ -62,9 +64,11 @@ self.addEventListener('push', function(event) {
         break;
       case 'food-action':
         console.log('User changed to food.');
+        updateCat(event.notification.data.trans_id, "Food")
         break;
       case 'gas-action':
         console.log('User changed to gas.');
+        updateCat(event.notification.data.trans_id, "Gas")
         break;
       default:
         console.log(`Unknown action clicked: '${event.action}'`);
@@ -72,7 +76,7 @@ self.addEventListener('push', function(event) {
     }
   });
 
-  self.addEventListener('pushsubscriptionchange', function(event) {
+self.addEventListener('pushsubscriptionchange', function(event) {
     console.log('Subscription expired');
     event.waitUntil(
       self.registration.pushManager.subscribe({ userVisibleOnly: true })
@@ -88,3 +92,43 @@ self.addEventListener('push', function(event) {
         })
     )}
   );
+
+function openWindow(event){
+  const bankPage = '/banks';
+  const urlToOpen = new URL(bankPage, self.location.origin).href
+    const promiseChain = clients.matchAll({
+      type: 'window',
+      includeUncontrolled: true
+    }).then((windowClients) => {
+      let matchingClient = null;
+      for (let i=0; i<windowClients.length; i++){
+        const windowClient = windowClients[i];
+        if (windowClient.url ==urlToOpen){
+          matchingClient = windowClient;
+          break;
+        }
+      }
+      if (matchingClient){
+        return matchingClient.focus()
+      } else {
+        return clients.openWindow(urlToOpen)
+      }
+    });
+  event.waitUntil(promiseChain)
+}
+
+function updateCat(id, cat){
+    fetch('/user/updateTransaction',
+    {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        transactionId: id,
+        category: cat
+      })
+    }).then(function(){
+      console.log('Transaction updated!')
+    }).catch(function(err){
+      console.log(err)
+    })
+  }
