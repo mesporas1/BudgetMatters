@@ -1,6 +1,18 @@
+self.addEventListener('install', event => {
+  console.log('sw installing');
+  self.skipWaiting();
+})
+
+self.addEventListener('activate', event => {
+  console.log('sw is now ready!');
+  
+})
+
+
 self.addEventListener('push', function(event) {
   console.log(event.data.text())
   console.log({username: event.data.text()})
+  console.log("ellfffo");
   const getUncatTrans = fetch('/user/getUncategorizedTransactions',
     {
       method: 'POST',

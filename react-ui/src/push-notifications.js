@@ -26,18 +26,35 @@ function checkIfPushSupported(){
 
 function registerServiceWorker(){
   return navigator.serviceWorker.register('/sw.js')
-        .then(function(reg) {
+    .then(function(registration){
+      console.log('Service worker registered');
+      return registration
+    })
+    .catch(function(err){
+      console.error('Unable to register service worker', err)
+    })
+  
+     /*   .then(function(reg) {
           console.log('Service Worker is registered', reg);
-          reg.pushManager.subscribe({userVisibleOnly: true})
-            /*.then(function(sub){
-              console.log('endpoint', sub.endpoint)
-              reg.active.postMessage(JSON.stringify({uid: uid, token: token}))
-            })*/
-          return reg;
+         // reg.pushManager.subscribe({userVisibleOnly:true})
+          reg.pushManager.getSubscription()
+            .then(function(sub){
+              console.log(sub);
+              sendSubscriptionToBackEnd(sub);
+              
+              if (sub){
+                console.log('user is subscribed')
+              }
+              else{
+                console.log('user is not subscribed')
+              }
+              return sub
+            })
+            return reg;
         })
         .catch(function(error) {
           console.error('Service Worker Error', error);
-        });      
+        });      */
 }
 
 function askPermission() {
@@ -60,22 +77,36 @@ function askPermission() {
 
 //Subscribes the user to push notifications and returns a push subscription
 // The pushSubscription needs to be JSON.stringfied
-function subscribeUserToPush() {
-    return navigator.serviceWorker.register('/sw.js')
-    .then(function(registration) {
-      const subscribeOptions = {
-        userVisibleOnly: true,
-        applicationServerKey: urlB64ToUint8Array(
-          process.env.REACT_APP_WP_PUBLIC_KEY
-        )
-      };
-  
-      return registration.pushManager.subscribe(subscribeOptions);
-    })
-    .then(function(pushSubscription) {
-      console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
-      return pushSubscription;
-    });
+function subscribeUserToPush(registration) {
+  return navigator.serviceWorker.register('/sw.js')
+  .then(function(registration){
+    const subscribeOptions = {
+      userVisibleOnly: true,
+      applicationServerKey: urlB64ToUint8Array(
+        process.env.REACT_APP_WP_PUBLIC_KEY
+      )
+    };
+    return registration.pushManager.subscribe(subscribeOptions)
+  })
+      .then(function(pushSubscription){
+        console.log("test")
+        return pushSubscription;
+      })
+  }
+
+function getUserSubscription() {
+    return navigator.serviceWorker.ready
+      .then(function(serviceWorker){
+        return serviceWorker.pushManager.getSubscription();
+      })
+      .then(function(pushSubscription){
+        if (pushSubscription){
+          return pushSubscription;
+        } else{
+          return subscribeUserToPush(pushSubscription)
+        }
+        
+      })
   }
 
   //Sends subscription to server
@@ -101,5 +132,6 @@ function sendSubscriptionToBackEnd(subscription) {
     registerServiceWorker,
     askPermission,
     subscribeUserToPush,
-    sendSubscriptionToBackEnd
+    sendSubscriptionToBackEnd,
+    getUserSubscription
   }

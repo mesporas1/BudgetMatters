@@ -2,10 +2,12 @@ import React, {useState, useEffect} from 'react';
 import '../App.css';
 import Banks from "./Banks";
 import usePushNotifications from '../usePushNotifications';
+//import { checkIfPushSupported, registerServiceWorker, askPermission, subscribeUserToPush, sendSubscriptionToBackEnd, getUserSubscription } from '../push-notifications';
 
 // eslint-disable-next-line
 const axios = require('axios');
 axios.defaults.withCredentials = true;
+//const pushNotificationSupported = checkIfPushSupported();
 
 function NotButton(props){
     const {
@@ -17,6 +19,7 @@ function NotButton(props){
         loading
     } = usePushNotifications();
 
+
     return <div>
         {error && (
             <section>
@@ -25,10 +28,10 @@ function NotButton(props){
                 <p>Error code: {error.code}</p>
             </section>
         )}
-        {loading && "Loading, please stand by"}
         <p>Push notifications are {!pushNotificationSupported && "NOT"} supported by your device</p>
         <p> User consent to receive notifications is <strong>{userConsent}</strong></p>
         <p>Push notifications allow you to view your new transactions</p>
+        <p>Here is the error: {error}</p>
         <button disabled={userConsent == "granted"} onClick={onClickAskUserPermission}>{buttonText}</button>
         
     </div>
