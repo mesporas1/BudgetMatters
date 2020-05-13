@@ -15,7 +15,7 @@ I recommend installing from the react-ui directory before installing from the ro
 
 ```
 # Front end installation
-cd reaact-ui
+cd react-ui
 npm install
 
 # Back end installation
