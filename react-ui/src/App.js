@@ -61,7 +61,7 @@ function App(props) {
   return (
     <Grid container direction="column" className="App">
       <Header handleLogout={handleLogout} userCreds={userCreds}></Header>
-      <Container className="content-grid">
+      <Container className="content-grid" maxWidth="lg">
         <Routes appProps={{ userCreds, userHasAuthenticated }} />
       </Container>
     </Grid>
