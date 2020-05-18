@@ -1,22 +1,33 @@
-import React, {useState, useEffect, useCallback} from 'react';
-import '../App.css';
-const axios = require('axios');
+import React, { useState, useEffect, useCallback } from "react";
 
-function CategorySelection(props){
-    
-    const [newCategory, setNewCategory] = useState(props.category);
-  
-    
-    const updateCategory = async (category) => {
-            const result = await axios.post('/user/updateTransaction', {
-                transactionId: props.id,
-                category: category
-            })
-      }
-      
-    
+import {
+  makeStyles,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
+} from "@material-ui/core";
 
-    /*function updateCategory(category){
+const axios = require("axios");
+
+const useStyles = makeStyles((theme) => ({
+  formControl: {
+    width: "130px",
+  },
+}));
+
+function CategorySelection(props) {
+  const classes = useStyles();
+  const [newCategory, setNewCategory] = useState(props.category);
+
+  const updateCategory = async (category) => {
+    const result = await axios.post("/user/updateTransaction", {
+      transactionId: props.id,
+      category: category,
+    });
+  };
+
+  /*function updateCategory(category){
         try {
             const add_category = async () => {
                 await axios.post('/category/add',{
@@ -30,16 +41,24 @@ function CategorySelection(props){
             console.log(e);
     }
     }*/
-    return <div>
-        <select value={newCategory} onChange={e => {setNewCategory(e.target.value)
-                updateCategory(e.target.value)
-            }}>
-            { props.categories.data.categories.map((function(category){
-                return <option value={category.name}>{category.name}</option>
-            })) }
-        </select>
-    </div>
-    
+  return (
+    <FormControl className={classes.formControl}>
+      <InputLabel id="select-category-label"></InputLabel>
+      <Select
+        labelId="select-category-label"
+        id="select-category"
+        value={newCategory}
+        onChange={(e) => {
+          setNewCategory(e.target.value);
+          updateCategory(e.target.value);
+        }}
+      >
+        {props.categories.data.categories.map((category) => {
+          return <MenuItem value={category.name}>{category.name}</MenuItem>;
+        })}
+      </Select>
+    </FormControl>
+  );
 }
 
 export default CategorySelection;

@@ -15,8 +15,6 @@
     "react-ui/node_modules"
   ],
   "dependencies": {
-    "@material-ui/core": "^4.9.14",
-    "@material-ui/icons": "^4.9.1",
     "body-parser": "^1.19.0",
     "chalk": "^3.0.0",
     "connect-mongo": "^3.2.0",
