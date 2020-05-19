@@ -55,7 +55,7 @@ function Header({ handleLogout, userCreds }) {
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" className={classes.title}>
-          BudgetMatters
+          Budget Matters
         </Typography>
         {userCreds.loggedIn ? (
           <>
@@ -101,6 +101,15 @@ function Header({ handleLogout, userCreds }) {
               className={classes.buttonStyles}
             >
               Banks
+            </Button>
+            <Button
+              component={Link}
+              to="/transactions"
+              variant="text"
+              color="primary"
+              className={classes.buttonStyles}
+            >
+              Transactions
             </Button>
             <Button
               variant="contained"

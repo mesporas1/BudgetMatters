@@ -19,7 +19,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 const axios = require("axios");
 
 const useStyles = makeStyles((theme) => ({
-  categoriesPage: {
+  categories: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -75,7 +75,7 @@ function Categories(props) {
     }
   }
   return (
-    <div className={classes.categoriesPage}>
+    <div className={classes.categories}>
       <Typography variant="h4">Check Categories</Typography>
       <Paper className={classes.paper}>
         <List>
