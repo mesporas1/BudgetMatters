@@ -16,13 +16,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function CategorySelection(props) {
+function CategorySelection({ id, category, categories }) {
   const classes = useStyles();
-  const [newCategory, setNewCategory] = useState(props.category);
+  const [newCategory, setNewCategory] = useState(category);
 
   const updateCategory = async (category) => {
     const result = await axios.post("/user/updateTransaction", {
-      transactionId: props.id,
+      transactionId: id,
       category: category,
     });
   };
@@ -43,7 +43,6 @@ function CategorySelection(props) {
     }*/
   return (
     <FormControl className={classes.formControl}>
-      <InputLabel id="select-category-label"></InputLabel>
       <Select
         labelId="select-category-label"
         id="select-category"
@@ -53,7 +52,7 @@ function CategorySelection(props) {
           updateCategory(e.target.value);
         }}
       >
-        {props.categories.data.categories.map((category) => {
+        {categories.map((category) => {
           return <MenuItem value={category.name}>{category.name}</MenuItem>;
         })}
       </Select>

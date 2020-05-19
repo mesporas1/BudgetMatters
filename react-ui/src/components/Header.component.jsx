@@ -47,7 +47,7 @@ function Header({ handleLogout, userCreds }) {
               color="primary"
               className={classes.buttonStyles}
             >
-              Add Banks
+              Banks
             </Button>
             <Button
               variant="contained"
