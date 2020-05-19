@@ -1,12 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import PlaidLink from "react-plaid-link";
-import "../App.css";
-import Transactions from "./Transactions";
-import Categories from "./Categories";
-import NotButton from "./NotButton";
 
 import {
-  Grid,
   makeStyles,
   Paper,
   Table,
@@ -15,18 +10,22 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Typography,
 } from "@material-ui/core";
 
 const axios = require("axios");
 
 const useStyles = makeStyles((theme) => ({
   banks: {
-    //TODO,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "300px",
   },
+  banksTable: { margin: theme.spacing(2) },
+  plaidLink: {},
 }));
 
-function Banks(props) {
+const Banks = (props) => {
   const classes = useStyles();
   const [banks, setBanks] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
@@ -35,7 +34,7 @@ function Banks(props) {
     const fetchBanks = async () => {
       const result = await axios.get("/user/getBanks");
       setBanks(
-        result.data.banks.map(function (bank) {
+        result.data.banks.map((bank) => {
           console.log(bank);
           return (
             <TableRow key={bank._id}>
@@ -52,7 +51,7 @@ function Banks(props) {
     fetchBanks();
   }, [isFetching]);
 
-  function addBank(token, metadata) {
+  const addBank = (token, metadata) => {
     console.log(token);
     console.log(metadata);
     try {
@@ -75,52 +74,35 @@ function Banks(props) {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   return (
-    <Grid container spacing={3}>
-      <Grid item lg={12}>
-        <Typography variant="h4">Banks</Typography>
-      </Grid>
-      <Grid item lg={12}>
-        <PlaidLink
-          clientName="budgetting-app"
-          env={process.env.REACT_APP_PLAID_ENV}
-          product={process.env.REACT_APP_PLAID_PRODUCTS}
-          publicKey={process.env.REACT_APP_PLAID_PUBLIC_KEY}
-          onSuccess={addBank}
-          webhook={process.env.REACT_APP_WEBHOOK}
-        >
-          Open Link and connect to your bank!
-        </PlaidLink>
-      </Grid>
-
-      <Grid item lg={3}>
-        <TableContainer component={Paper} className={classes.banks}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Banks</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {isFetching ? "Fetching banks from API" : banks}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Grid>
-
-      <Grid item lg={12}>
-        <Typography variant="h4">Transactions</Typography>
-      </Grid>
-      <Grid item lg={12}>
-        <Transactions></Transactions>
-      </Grid>
-      <Grid item lg={12}>
-        <NotButton></NotButton>
-      </Grid>
-    </Grid>
+    <div className={classes.banks}>
+      <TableContainer component={Paper} className={classes.banksTable}>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>Banks</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {isFetching ? "Fetching banks from API" : banks}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <PlaidLink
+        className={classes.plaidLink}
+        clientName="budgetting-app"
+        env={process.env.REACT_APP_PLAID_ENV}
+        product={process.env.REACT_APP_PLAID_PRODUCTS}
+        publicKey={process.env.REACT_APP_PLAID_PUBLIC_KEY}
+        onSuccess={addBank}
+        webhook={process.env.REACT_APP_WEBHOOK}
+      >
+        Open Link and connect to your bank!
+      </PlaidLink>
+    </div>
   );
-}
+};
 
 export default Banks;

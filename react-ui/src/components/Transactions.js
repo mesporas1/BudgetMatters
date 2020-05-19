@@ -3,6 +3,7 @@ import "../App.css";
 import CategorySelection from "./CategorySelection";
 
 import {
+  makeStyles,
   Table,
   TableContainer,
   TableBody,
@@ -15,7 +16,14 @@ import {
 
 const axios = require("axios");
 
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    marginTop: theme.spacing(2),
+  },
+}));
+
 const Transactions = (props) => {
+  const classes = useStyles();
   const [categories, setCategories] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
@@ -57,7 +65,7 @@ const Transactions = (props) => {
     Math.min(rowsPerPage, transactions.length - page * rowsPerPage);
 
   return (
-    <Paper>
+    <Paper className={classes.paper}>
       <TableContainer>
         <Table size="small">
           <TableHead>
