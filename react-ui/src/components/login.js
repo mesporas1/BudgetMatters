@@ -84,9 +84,7 @@ function LoginForm(props) {
   return (
     <>
       {props.userCreds.loggedIn ? (
-        <>
-          <Banks></Banks>
-        </>
+        <Banks></Banks>
       ) : (
         <Container className={classes.paper} maxWidth="xs">
           <Avatar className={classes.avatar}>

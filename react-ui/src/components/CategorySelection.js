@@ -1,12 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 
-import {
-  makeStyles,
-  FormControl,
-  Select,
-  MenuItem,
-  InputLabel,
-} from "@material-ui/core";
+import { makeStyles, FormControl, Select, MenuItem } from "@material-ui/core";
 
 const axios = require("axios");
 
@@ -53,7 +47,11 @@ function CategorySelection({ id, category, categories }) {
         }}
       >
         {categories.map((category) => {
-          return <MenuItem value={category.name}>{category.name}</MenuItem>;
+          return (
+            <MenuItem key={category._id} value={category.name}>
+              {category.name}
+            </MenuItem>
+          );
         })}
       </Select>
     </FormControl>

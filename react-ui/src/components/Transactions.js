@@ -33,8 +33,6 @@ const Transactions = (props) => {
       };
       const result = await axios.all([getTransactions(), getCategories()]).then(
         axios.spread((resultTrans, resultCat) => {
-          console.log({ resultCat });
-          console.log({ resultTrans });
           setCategories(resultCat.data.categories);
           setTransactions(resultTrans.data.transactions);
         })
@@ -91,6 +89,11 @@ const Transactions = (props) => {
                       <TableCell align="right">{transaction.date}</TableCell>
                     </TableRow>
                   ))}
+            {emptyRows > 0 && (
+              <TableRow style={{ height: 43.5 * emptyRows }}>
+                <TableCell colSpan={4} />
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>

@@ -2,19 +2,44 @@ import React, { useState, useEffect, useCallback } from "react";
 import "../App.css";
 
 import {
-  Table,
-  TableContainer,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
+  makeStyles,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
   Paper,
+  Typography,
+  TextField,
+  IconButton,
 } from "@material-ui/core";
+
+import DeleteIcon from "@material-ui/icons/Delete";
 
 const axios = require("axios");
 
+const useStyles = makeStyles((theme) => ({
+  categoriesPage: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  paper: {
+    width: "50%",
+    margin: theme.spacing(2),
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  button: {
+    marginTop: theme.spacing(1),
+  },
+}));
+
 function Categories(props) {
-  const [categories, setCategories] = useState(<th> No categories </th>);
+  const classes = useStyles();
+  const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState("");
   const [isFetching, setIsFetching] = useState(false);
 
@@ -22,15 +47,7 @@ function Categories(props) {
     //setIsFetching(true);
     const fetchCategories = async () => {
       const result = await axios.get("/category/getAll");
-      setCategories(
-        result.data.categories.map(function (category) {
-          return (
-            <tr key={category._id}>
-              <th>{category.name}</th>
-            </tr>
-          );
-        })
-      );
+      setCategories(result.data.categories);
       setIsFetching(false);
     };
     fetchCategories();
@@ -58,24 +75,53 @@ function Categories(props) {
     }
   }
   return (
-    <div>
-      <table>
-        <tr>
-          <th>Category</th>
-        </tr>
-        {isFetching ? "Fetching categories from API" : categories}
-      </table>
+    <div className={classes.categoriesPage}>
+      <Typography variant="h4">Check Categories</Typography>
+      <Paper className={classes.paper}>
+        <List>
+          {isFetching
+            ? "Fetching categories from API"
+            : categories.map((category) => (
+                <ListItem key={category._id}>
+                  <ListItemText
+                    primary={category.name || "null"}
+                  ></ListItemText>
+                  <ListItemSecondaryAction>
+                    <IconButton edge="end" aria-label="delete">
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ))}
+        </List>
+      </Paper>
+
       <form
+        className={classes.form}
         onSubmit={() => {
           addCategory(newCategory);
         }}
       >
-        <input
+        <TextField
+          id="add-category"
+          label="Category"
           type="text"
+          margin="normal"
+          size="small"
+          required
+          variant="outlined"
           value={newCategory}
           onChange={(event) => setNewCategory(event.target.value)}
-        ></input>
-        <button type="submit">Add Category</button>
+        />
+        <Button
+          className={classes.button}
+          variant="contained"
+          size="large"
+          color="primary"
+          type="submit"
+        >
+          Add Category
+        </Button>
       </form>
     </div>
   );

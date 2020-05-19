@@ -22,13 +22,13 @@ const axios = require("axios");
 
 const useStyles = makeStyles((theme) => ({
   banks: {
-    //margin: "20px 0 20px 0",
+    //TODO,
   },
 }));
 
 function Banks(props) {
   const classes = useStyles();
-  const [banks, setBanks] = useState(<th> No bank data </th>);
+  const [banks, setBanks] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
 
   useEffect(() => {
@@ -43,9 +43,6 @@ function Banks(props) {
                 {bank.institution}
               </TableCell>
             </TableRow>
-            // <tr key={bank._id}>
-            //   <th>{bank.institution}</th>
-            // </tr>
           );
         })
       );
