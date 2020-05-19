@@ -1,55 +1,121 @@
-import React, {useState, useEffect, useCallback} from 'react';
-import '../App.css';
-import CategorySelection from './CategorySelection';
-const axios = require('axios');
+import React, { useState, useEffect, useCallback } from "react";
+import "../App.css";
+import CategorySelection from "./CategorySelection";
 
-function Transactions(props){
-    
-    const [categories, setCategories] = useState(<th> No categories </th>);
-    const [transactions, setTransactions] = useState(<th> No transaction data </th>);
-    const [isFetching, setIsFetching] = useState(false);
-  
-    useEffect(() => {
-      //setIsFetching(true);
-      const fetchTransactions = async () => {
-            function getTransactions(){
-                return axios.get('/user/getTransactions');
-            }
-            function getCategories(){
-                return axios.get('/category/getAll');
-            }
-            const result = await axios.all([getTransactions(), getCategories()])
-                .then(axios.spread(function (resultTrans, resultCat){
-                    console.log(resultCat)
-                    setTransactions(resultTrans.data.transactions.map((function(transaction){
-                        return <tr key = {transaction.transaction_id}>
-                            <th>{transaction.name}</th>
-                            <th>{transaction.amount}</th>
-                            <th><CategorySelection id={transaction.transaction_id} category={transaction.category} categories={resultCat}></CategorySelection></th>
-                            <th>{transaction.date}</th>
-                        </tr>
-                        })))
-                }))
-            
-            setIsFetching(false)
-      }
-      fetchTransactions()
-    }, [isFetching]);
+import {
+  makeStyles,
+  Table,
+  TableContainer,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TablePagination,
+  Paper,
+} from "@material-ui/core";
 
-    return <div>
-    <table>
-        <tr>
-            <th>Transactions</th>
-            <th>Amount</th>
-            <th>Category</th>
-            <th>Date</th>
-        </tr>
-        { isFetching ? 'Fetching transactions from API': transactions   }
+const axios = require("axios");
 
-    </table>
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    marginTop: theme.spacing(2),
+  },
+}));
 
-    </div>
-    
-}
+const Transactions = (props) => {
+  const classes = useStyles();
+  const [categories, setCategories] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  useEffect(() => {
+    //setIsFetching(true);
+    const fetchTransactions = async () => {
+      const getTransactions = () => {
+        return axios.get("/user/getTransactions");
+      };
+      const getCategories = () => {
+        return axios.get("/category/getAll");
+      };
+      const result = await axios.all([getTransactions(), getCategories()]).then(
+        axios.spread((resultTrans, resultCat) => {
+          setCategories(resultCat.data.categories);
+          setTransactions(resultTrans.data.transactions);
+        })
+      );
+
+      setIsFetching(false);
+    };
+    fetchTransactions();
+  }, [isFetching]);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const emptyRows =
+    rowsPerPage -
+    Math.min(rowsPerPage, transactions.length - page * rowsPerPage);
+
+  return (
+    <Paper className={classes.paper}>
+      <TableContainer>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell align="right">Amount ($)</TableCell>
+              <TableCell align="right">Category</TableCell>
+              <TableCell align="right">Date</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {isFetching
+              ? "Fetching transactions from API"
+              : transactions
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((transaction) => (
+                    <TableRow key={transaction.transaction_id}>
+                      <TableCell component="th" scope="row">
+                        {transaction.name}
+                      </TableCell>
+                      <TableCell align="right">{transaction.amount}</TableCell>
+                      <TableCell align="right">
+                        <CategorySelection
+                          id={transaction.transaction_id}
+                          category={transaction.category}
+                          categories={categories}
+                        ></CategorySelection>
+                      </TableCell>
+                      <TableCell align="right">{transaction.date}</TableCell>
+                    </TableRow>
+                  ))}
+            {emptyRows > 0 && (
+              <TableRow style={{ height: 43.5 * emptyRows }}>
+                <TableCell colSpan={4} />
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={transactions.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
+    </Paper>
+  );
+};
 
 export default Transactions;
