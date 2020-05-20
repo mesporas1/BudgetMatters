@@ -73,6 +73,17 @@ const Banks = (props) => {
   return (
     <div className={classes.banks}>
       <Typography variant="h4">Banks</Typography>
+      <PlaidLink
+        className={classes.plaidLink}
+        clientName="budgetting-app"
+        env={process.env.REACT_APP_PLAID_ENV}
+        product={process.env.REACT_APP_PLAID_PRODUCTS}
+        publicKey={process.env.REACT_APP_PLAID_PUBLIC_KEY}
+        onSuccess={addBank}
+        webhook={process.env.REACT_APP_WEBHOOK}
+      >
+        Open Link and connect to your bank!
+      </PlaidLink>
       <Paper className={classes.paper}>
         <List>
           {isFetching
@@ -89,18 +100,6 @@ const Banks = (props) => {
               ))}
         </List>
       </Paper>
-
-      <PlaidLink
-        className={classes.plaidLink}
-        clientName="budgetting-app"
-        env={process.env.REACT_APP_PLAID_ENV}
-        product={process.env.REACT_APP_PLAID_PRODUCTS}
-        publicKey={process.env.REACT_APP_PLAID_PUBLIC_KEY}
-        onSuccess={addBank}
-        webhook={process.env.REACT_APP_WEBHOOK}
-      >
-        Open Link and connect to your bank!
-      </PlaidLink>
     </div>
   );
 };

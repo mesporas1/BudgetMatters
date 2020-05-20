@@ -1,11 +1,8 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
-// import CategoryTable from './category_table';
 import LoginForm from "./login";
 import AppliedRoute from "./AppliedRoute";
 import NotFound from "./NotFound";
-//import NotFound from "../containers/NotFound";
-import BanksPage from "./BanksPage";
 import Banks from "./Banks";
 import Transactions from "./Transactions";
 import Categories from "./Categories";
