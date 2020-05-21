@@ -6,7 +6,7 @@ const axios = require("axios");
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
-    width: "130px",
+    width: "140px",
   },
 }));
 

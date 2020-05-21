@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../App.css";
-import BanksPage from "./BanksPage";
+import Transactions from "./Transactions";
 
 import {
   makeStyles,
@@ -84,7 +84,7 @@ function LoginForm(props) {
   return (
     <>
       {props.userCreds.loggedIn ? (
-        <BanksPage></BanksPage>
+        <Transactions></Transactions>
       ) : (
         <Container className={classes.paper} maxWidth="xs">
           <Avatar className={classes.avatar}>

@@ -19,7 +19,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 const axios = require("axios");
 
 const useStyles = makeStyles((theme) => ({
-  categoriesPage: {
+  categories: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -37,14 +37,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Categories(props) {
+const Categories = (props) => {
   const classes = useStyles();
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState("");
   const [isFetching, setIsFetching] = useState(false);
 
   useEffect(() => {
-    //setIsFetching(true);
     const fetchCategories = async () => {
       const result = await axios.get("/category/getAll");
       setCategories(result.data.categories);
@@ -53,55 +52,48 @@ function Categories(props) {
     fetchCategories();
   }, [isFetching]);
 
-  function addCategory(category) {
-    try {
-      const add_category = async () => {
-        await axios.post("/category/add", {
-          categoryName: category,
-        });
-        /*.then(() => {
-                        const url = '/plaid/transactions/' + metadata.institution.name
-                        return axios.get(url)
-                    })
-                    .then((response) => {
-                        console.log('Response', response)
-                    })*/
-        setIsFetching(true);
-      };
-      add_category();
-      console.log("did the category get added");
-    } catch (e) {
-      console.log(e);
-    }
-  }
-  return (
-    <div className={classes.categoriesPage}>
-      <Typography variant="h4">Check Categories</Typography>
-      <Paper className={classes.paper}>
-        <List>
-          {isFetching
-            ? "Fetching categories from API"
-            : categories.map((category) => (
-                <ListItem key={category._id}>
-                  <ListItemText
-                    primary={category.name || "null"}
-                  ></ListItemText>
-                  <ListItemSecondaryAction>
-                    <IconButton edge="end" aria-label="delete">
-                      <DeleteIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-              ))}
-        </List>
-      </Paper>
+  const add_category = async (category) => {
+    await axios.post("/category/add", {
+      categoryName: category,
+    });
+    setIsFetching(true);
+  };
 
-      <form
-        className={classes.form}
-        onSubmit={() => {
-          addCategory(newCategory);
-        }}
-      >
+  const addCategory = (category) => {
+    try {
+      add_category(category);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const remove_category = async (id) => {
+    await axios.post("/category/remove", {
+      categoryId: id,
+    });
+    setIsFetching(true);
+  };
+
+  const removeCategory = (event) => {
+    event.preventDefault();
+    const id = event.currentTarget.id;
+    try {
+      remove_category(id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    addCategory(newCategory);
+    setNewCategory("");
+  };
+
+  return (
+    <div className={classes.categories}>
+      <Typography variant="h4">Check Categories</Typography>
+      <form className={classes.form} onSubmit={handleSubmit}>
         <TextField
           id="add-category"
           label="Category"
@@ -123,8 +115,29 @@ function Categories(props) {
           Add Category
         </Button>
       </form>
+      <Paper className={classes.paper}>
+        <List>
+          {isFetching
+            ? "Fetching categories from API"
+            : categories.map((category) => (
+                <ListItem key={category._id} id={category._id}>
+                  <ListItemText primary={category.name || "null"} />
+                  <ListItemSecondaryAction>
+                    <IconButton
+                      edge="end"
+                      aria-label="delete"
+                      onClick={removeCategory}
+                      id={category._id}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ))}
+        </List>
+      </Paper>
     </div>
   );
-}
+};
 
 export default Categories;

@@ -3,14 +3,16 @@ import PlaidLink from "react-plaid-link";
 
 import {
   makeStyles,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
   Paper,
-  Table,
-  TableContainer,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
+  Typography,
+  IconButton,
 } from "@material-ui/core";
+
+import DeleteIcon from "@material-ui/icons/Delete";
 
 const axios = require("axios");
 
@@ -19,9 +21,12 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    width: "300px",
   },
   banksTable: { margin: theme.spacing(2) },
+  paper: {
+    width: "50%",
+    margin: theme.spacing(2),
+  },
   plaidLink: {},
 }));
 
@@ -33,18 +38,7 @@ const Banks = (props) => {
   useEffect(() => {
     const fetchBanks = async () => {
       const result = await axios.get("/user/getBanks");
-      setBanks(
-        result.data.banks.map((bank) => {
-          console.log(bank);
-          return (
-            <TableRow key={bank._id}>
-              <TableCell component="th" scope="row">
-                {bank.institution}
-              </TableCell>
-            </TableRow>
-          );
-        })
-      );
+      setBanks(result.data.banks);
       setIsFetching(false);
       console.log("did you get the banks really though?");
     };
@@ -78,18 +72,7 @@ const Banks = (props) => {
 
   return (
     <div className={classes.banks}>
-      <TableContainer component={Paper} className={classes.banksTable}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>Banks</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {isFetching ? "Fetching banks from API" : banks}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <Typography variant="h4">Banks</Typography>
       <PlaidLink
         className={classes.plaidLink}
         clientName="budgetting-app"
@@ -101,6 +84,22 @@ const Banks = (props) => {
       >
         Open Link and connect to your bank!
       </PlaidLink>
+      <Paper className={classes.paper}>
+        <List>
+          {isFetching
+            ? "Fetching banks from API"
+            : banks.map((bank) => (
+                <ListItem key={bank._id}>
+                  <ListItemText primary={bank.institution}></ListItemText>
+                  <ListItemSecondaryAction>
+                    <IconButton edge="end" aria-label="delete">
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ))}
+        </List>
+      </Paper>
     </div>
   );
 };
