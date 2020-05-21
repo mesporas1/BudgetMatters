@@ -59,7 +59,8 @@ const EnhancedTable = ({ headCells, rows, categories }) => {
     setSelected([]);
   };
 
-  const handleClick = (event, id) => {
+  const handleRowClick = (event, id) => {
+    event.preventDefault();
     const selectedIndex = selected.indexOf(id);
     let newSelected = [];
 
@@ -78,6 +79,10 @@ const EnhancedTable = ({ headCells, rows, categories }) => {
 
     setSelected(newSelected);
   };
+  const handleCategoryClick = (event) => {
+    event.stopPropagation();
+  };
+
   //#endregion
 
   //#region Paging
@@ -160,7 +165,7 @@ const EnhancedTable = ({ headCells, rows, categories }) => {
                     <TableRow
                       hover
                       onClick={(event) =>
-                        handleClick(event, row.transaction_id)
+                        handleRowClick(event, row.transaction_id)
                       }
                       role="checkbox"
                       aria-checked={isItemSelected}
@@ -183,7 +188,10 @@ const EnhancedTable = ({ headCells, rows, categories }) => {
                         {row.name}
                       </TableCell>
                       <TableCell align="right">{row.amount}</TableCell>
-                      <TableCell align="right">
+                      <TableCell
+                        align="right"
+                        onClick={(event) => handleCategoryClick(event)}
+                      >
                         <CategorySelection
                           id={row.transaction_id}
                           category={row.category}

@@ -32,7 +32,7 @@ const EnhancedTableHead = (props) => {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ "aria-label": "select all desserts" }}
+            inputProps={{ "aria-label": "select all" }}
           />
         </TableCell>
         {headCells.map((headCell) => (

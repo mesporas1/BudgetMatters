@@ -52,9 +52,7 @@ const EnhancedTableToolbar = (props) => {
           variant="h6"
           id="tableTitle"
           component="div"
-        >
-          Nutrition
-        </Typography>
+        ></Typography>
       )}
 
       {numSelected > 0 ? (
