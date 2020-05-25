@@ -193,7 +193,7 @@ const EnhancedTable = ({ headCells, rows, categories }) => {
                         onClick={(event) => handleCategoryClick(event)}
                       >
                         <CategorySelection
-                          id={row.transaction_id}
+                          transactionId={row.transaction_id}
                           category={row.category}
                           categories={categories}
                         />

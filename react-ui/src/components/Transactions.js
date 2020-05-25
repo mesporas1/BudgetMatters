@@ -16,6 +16,9 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(4),
     width: "80%",
   },
+  noTransactions: {
+    margin: theme.spacing(8),
+  },
 }));
 
 const Transactions = (props) => {
@@ -69,12 +72,18 @@ const Transactions = (props) => {
   return (
     <div className={classes.transactions}>
       <Typography variant="h4">Transactions</Typography>
-      <EnhancedTable
-        className={classes.table}
-        headCells={headCells}
-        rows={transactions}
-        categories={categories}
-      />
+      {transactions ? (
+        <EnhancedTable
+          className={classes.table}
+          headCells={headCells}
+          rows={transactions}
+          categories={categories}
+        />
+      ) : (
+        <Typography className={classes.noTransactions}>
+          There are no transactions. Please connect a bank.
+        </Typography>
+      )}
     </div>
   );
 };

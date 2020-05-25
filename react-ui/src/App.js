@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import Routes from "./components/Routes";
-import { useHistory } from "react-router-dom";
 
 import { Grid, Container } from "@material-ui/core";
-import Header from "./components/Header.component";
+import Header from "./components/Header";
 
 const axios = require("axios");
 axios.defaults.withCredentials = true;
 
 function App(props) {
-  let history = useHistory();
   const [userCreds, userHasAuthenticated] = useState({
     loggedIn: false,
     username: null,
@@ -29,7 +27,6 @@ function App(props) {
         console.log(response.data);
         if (response.status === 200) {
           userHasAuthenticated({ loggedIn: false, username: null });
-          history.push("/");
         }
       })
       .catch((error) => {
@@ -62,7 +59,7 @@ function App(props) {
     <Grid container direction="column" className="App">
       <Header handleLogout={handleLogout} userCreds={userCreds}></Header>
       <Container className="content-grid" maxWidth="lg">
-        <Routes appProps={{ userCreds, userHasAuthenticated }} />
+        <Routes childProps={{ userCreds, userHasAuthenticated }} />
       </Container>
     </Grid>
   );
