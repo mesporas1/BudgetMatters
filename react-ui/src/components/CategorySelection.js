@@ -10,13 +10,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function CategorySelection({ id, category, categories }) {
+function CategorySelection({ transactionId, category, categories }) {
   const classes = useStyles();
   const [newCategory, setNewCategory] = useState(category);
 
   const updateCategory = async (category) => {
     const result = await axios.post("/user/updateTransaction", {
-      transactionId: id,
+      transactionId: transactionId,
       category: category,
     });
   };

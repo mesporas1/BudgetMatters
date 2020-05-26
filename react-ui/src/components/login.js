@@ -46,11 +46,13 @@ function LoginForm(props) {
   const [responseText, setResponse] = useState({
     apiResponse: "Please log in",
   });
+
   useEffect(() => {
     if (props.userCreds.loggedIn) {
       setResponse({ apiResponse: "Logged in" });
     }
   }, [props.userCreds.loggedIn]);
+
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -82,53 +84,47 @@ function LoginForm(props) {
   }
 
   return (
-    <>
-      {props.userCreds.loggedIn ? (
-        <Transactions></Transactions>
-      ) : (
-        <Container className={classes.paper} maxWidth="xs">
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h4">
-            Sign in
-          </Typography>
-          <form className={classes.form} onSubmit={handleSubmit}>
-            <TextField
-              id="username"
-              label="Username"
-              variant="outlined"
-              margin="normal"
-              required
-              name="username"
-              autoComplete="username"
-              autoFocus
-              onChange={(e) => setUser(e.target.value)}
-            />
-            <TextField
-              id="pass"
-              label="Password"
-              variant="outlined"
-              margin="normal"
-              type="password"
-              autoComplete="current-password"
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
-            />
-            <Button
-              className={classes.submitButton}
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={!validateForm()}
-            >
-              Log in
-            </Button>
-          </form>
-          <Typography>{responseText.apiResponse}</Typography>
-        </Container>
-      )}
-    </>
+    <Container className={classes.paper} maxWidth="xs">
+      <Avatar className={classes.avatar}>
+        <LockOutlinedIcon />
+      </Avatar>
+      <Typography component="h1" variant="h4">
+        Sign in
+      </Typography>
+      <form className={classes.form} onSubmit={handleSubmit}>
+        <TextField
+          id="username"
+          label="Username"
+          variant="outlined"
+          margin="normal"
+          required
+          name="username"
+          autoComplete="username"
+          autoFocus
+          onChange={(e) => setUser(e.target.value)}
+        />
+        <TextField
+          id="pass"
+          label="Password"
+          variant="outlined"
+          margin="normal"
+          type="password"
+          autoComplete="current-password"
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+        />
+        <Button
+          className={classes.submitButton}
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={!validateForm()}
+        >
+          Log in
+        </Button>
+      </form>
+      <Typography>{responseText.apiResponse}</Typography>
+    </Container>
   );
 }
 

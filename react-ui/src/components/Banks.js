@@ -37,8 +37,13 @@ const Banks = (props) => {
 
   useEffect(() => {
     const fetchBanks = async () => {
-      const result = await axios.get("/user/getBanks");
-      setBanks(result.data.banks);
+      await axios
+        .get("/user/getBanks")
+        .then((response) => {
+          setBanks(response.data.banks);
+        })
+        .catch((err) => console.log({ err }));
+
       setIsFetching(false);
       console.log("did you get the banks really though?");
     };
@@ -85,20 +90,24 @@ const Banks = (props) => {
         Open Link and connect to your bank!
       </PlaidLink>
       <Paper className={classes.paper}>
-        <List>
-          {isFetching
-            ? "Fetching banks from API"
-            : banks.map((bank) => (
-                <ListItem key={bank._id}>
-                  <ListItemText primary={bank.institution}></ListItemText>
-                  <ListItemSecondaryAction>
-                    <IconButton edge="end" aria-label="delete">
-                      <DeleteIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-              ))}
-        </List>
+        {isFetching ? (
+          <Typography>Fetching banks from API</Typography>
+        ) : (
+          <List>
+            {banks
+              ? banks.map((bank) => (
+                  <ListItem key={bank._id}>
+                    <ListItemText primary={bank.institution}></ListItemText>
+                    <ListItemSecondaryAction>
+                      <IconButton edge="end" aria-label="delete">
+                        <DeleteIcon />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                ))
+              : null}
+          </List>
+        )}
       </Paper>
     </div>
   );

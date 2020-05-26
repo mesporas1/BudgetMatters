@@ -1,28 +1,45 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
 import LoginForm from "./login";
-import AppliedRoute from "./AppliedRoute";
 import NotFound from "./NotFound";
 import Banks from "./Banks";
 import Transactions from "./Transactions";
 import Categories from "./Categories";
+import UnauthenticatedRoute from "./Routes/UnauthenticatedRoute";
+import AuthenticatedRoute from "./Routes/AuthenticatedRoute";
 
-export default function Routes({ appProps }) {
+export default function Routes({ childProps }) {
   return (
     <Switch>
-      <AppliedRoute path="/" exact component={LoginForm} appProps={appProps} />
-      <AppliedRoute path="/banks" exact component={Banks} appProps={appProps} />
-      <AppliedRoute
+      <UnauthenticatedRoute
+        path="/login"
+        exact
+        component={LoginForm}
+        props={childProps}
+      />
+      <AuthenticatedRoute
+        path="/banks"
+        exact
+        component={Banks}
+        props={childProps}
+      />
+      <AuthenticatedRoute
         path="/categories"
         exact
         component={Categories}
-        appProps={appProps}
+        props={childProps}
       />
-      <AppliedRoute
+      <AuthenticatedRoute
+        path="/"
+        exact
+        component={Transactions}
+        props={childProps}
+      />
+      <AuthenticatedRoute
         path="/transactions"
         exact
         component={Transactions}
-        appProps={appProps}
+        props={childProps}
       />
       <Route component={NotFound} />
     </Switch>
